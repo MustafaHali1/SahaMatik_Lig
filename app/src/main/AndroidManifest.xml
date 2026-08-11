@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SahaMatik_Lig">
         <activity
+            android:name=".view.LigDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="false" />
         <activity
