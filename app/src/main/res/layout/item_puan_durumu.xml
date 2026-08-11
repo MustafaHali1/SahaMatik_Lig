@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="12dp"
+    android:gravity="center_vertical">
+
+    <!-- Sıra No -->
+    <TextView
+        android:id="@+id/tvSira"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+    <!-- Takım Adı -->
+    <TextView
+        android:id="@+id/tvTakimAdi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Takım Adı"
+        android:textColor="#000000"
+        android:textSize="14sp" />
+
+    <!-- Oynanan -->
+    <TextView
+        android:id="@+id/tvOynanan"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#666666" />
+
+    <!-- Galibiyet -->
+    <TextView
+        android:id="@+id/tvGalibiyet"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#666666" />
+
+    <!-- Beraberlik -->
+    <TextView
+        android:id="@+id/tvBeraberlik"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#666666" />
+
+    <!-- Mağlubiyet -->
+    <TextView
+        android:id="@+id/tvMaglubiyet"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#666666" />
+
+    <!-- Averaj -->
+    <TextView
+        android:id="@+id/tvAveraj"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#666666" />
+
+    <!-- Puan -->
+    <TextView
+        android:id="@+id/tvPuan"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+</LinearLayout>
