@@ -7,7 +7,8 @@ import com.example.sahamatik_lig.databinding.ItemLigBinding
 import com.example.sahamatik_lig.model.Lig
 
 class LigAdapter(
-    private val ligList: List<Lig>
+    private val ligList: List<Lig>,
+    private val onItemClick: (Lig) -> Unit // Tıklama olayını MainActivity'ye ileten lambda
 ) : RecyclerView.Adapter<LigAdapter.LigViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LigViewHolder {
@@ -16,14 +17,19 @@ class LigAdapter(
     }
 
     override fun onBindViewHolder(holder: LigViewHolder, position: Int) {
-        holder.bind(ligList[position])
+        holder.bind(ligList[position], onItemClick)
     }
 
     override fun getItemCount(): Int = ligList.size
 
     class LigViewHolder(private val binding: ItemLigBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(lig: Lig) {
+        fun bind(lig: Lig, onItemClick: (Lig) -> Unit) {
             binding.recyclerViewTextView.text = lig.name
+
+            // Karta tıklandığında seçilen ligi dışarı gönderiyoruz
+            binding.root.setOnClickListener {
+                onItemClick(lig)
+            }
         }
     }
 }
