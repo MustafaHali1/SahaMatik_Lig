@@ -1,5 +1,6 @@
 package com.example.sahamatik_lig.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -79,13 +80,17 @@ class SiralamaFragment : Fragment() {
                     grupTakimlariMap[grupAdi] = guncelTakimlar
                 }
 
-                // Adapter'ı bağla
-                binding.rvPuanDurumu.adapter = GrupSiralamaAdapter(grupTakimlariMap)
+                // Adapter'ı tıklama desteğiyle bağla
+                binding.rvPuanDurumu.adapter = GrupSiralamaAdapter(grupTakimlariMap) { tiklananTakimAdi ->
+                    takimDetayinaGit(tiklananTakimAdi)
+                }
             }
 
         } else {
-            // Klasik Lig Düzeni
-            puanAdapter = PuanDurumuAdapter(puanListesi)
+            // Klasik Lig Düzeni - Tıklama desteğiyle başlat
+            puanAdapter = PuanDurumuAdapter(puanListesi) { tiklananTakimAdi ->
+                takimDetayinaGit(tiklananTakimAdi)
+            }
             binding.rvPuanDurumu.adapter = puanAdapter
 
             takimIsimleri?.let {
@@ -100,6 +105,14 @@ class SiralamaFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun takimDetayinaGit(takimAdi: String) {
+        val intent = Intent(requireContext(), TakimDetailActivity::class.java).apply {
+            putExtra("TAKIM_ADI", takimAdi)
+            putExtra("LIG_ADI", "Sultanbeyli Ligi")
+        }
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

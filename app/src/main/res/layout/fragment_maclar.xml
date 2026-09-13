@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F3EC"
+    android:orientation="vertical"
+    android:padding="18dp">
 
+    <!-- Tur Başlığı -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="14dp"
+            android:background="#C7A233" />
+
+        <TextView
+            android:id="@+id/tvHafta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="1. Tur"
+            android:textColor="#16201C"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Maç Listesi -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMaclar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
+        android:layout_height="match_parent"
+        android:clipToPadding="false" />
+</LinearLayout>

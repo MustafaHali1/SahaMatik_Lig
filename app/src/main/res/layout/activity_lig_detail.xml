@@ -3,77 +3,135 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F8F9FA">
+    android:background="#F5F3EC"
+    android:orientation="vertical">
 
-    <!-- Üst Yeşil Başlık Barı -->
+    <!-- Üst Başlık Barı (Koyu Yeşil) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#00C853"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:background="#0F3D2E"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="12dp">
 
+        <!-- Geri Butonu (tvBack) -->
         <TextView
             android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="←"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:paddingEnd="16dp" />
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:text="‹ Geri"
+            android:textColor="#F5F3EC"
+            android:textSize="14sp" />
 
+        <!-- Dinamik Lig Başlığı (tvLigTitle) -->
         <TextView
             android:id="@+id/tvLigTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lig Detayı"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:text="Sultanbeyli Ligi"
+            android:textColor="#F5F3EC"
+            android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Sıralama / Maçlar Sekme Barı (Hap Tasarım) -->
+    <!-- Sekmeler Alanı (Sıralama - Maçlar - İstatistikler) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#0F3D2E"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp"
-        android:background="#FFFFFF">
+        android:paddingHorizontal="18dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSiralama"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:text="Sıralama"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#00C853"
-            app:cornerRadius="22dp"
-            android:layout_marginEnd="8dp" />
+        <!-- 1. Sekme: Sıralama -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMaclar"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:text="Maçlar"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            app:backgroundTint="#E0E0E0"
-            app:cornerRadius="22dp" />
+            <TextView
+                android:id="@+id/btnSiralama"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:paddingVertical="10dp"
+                android:text="Sıralama"
+                android:textColor="#F5F3EC"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/indicatorSiralama"
+                android:layout_width="match_parent"
+                android:layout_height="2.5dp"
+                android:background="#C7A233" />
+        </LinearLayout>
+
+        <!-- 2. Sekme: Maçlar -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/btnMaclar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:paddingVertical="10dp"
+                android:text="Maçlar"
+                android:textColor="#8CF5F3EC"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/indicatorMaclar"
+                android:layout_width="match_parent"
+                android:layout_height="2.5dp"
+                android:background="#C7A233"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <!-- 3. Sekme: İstatistikler -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/btnIstatistik"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:paddingVertical="10dp"
+                android:text="İstatistikler"
+                android:textColor="#8CF5F3EC"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/indicatorIstatistik"
+                android:layout_width="match_parent"
+                android:layout_height="2.5dp"
+                android:background="#C7A233"
+                android:visibility="invisible" />
+        </LinearLayout>
+
     </LinearLayout>
 
-    <!-- İçerik Alanı: Grupların alt alta listeleneceği Fragment buraya oturur -->
+    <!-- Fragment'ların Yüklendiği Alan (fragmentContainer) -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Çim Saha Zemini -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#1A6B44" />
+            <corners android:radius="16dp" />
+            <stroke android:width="2dp" android:color="#248757" />
+        </shape>
+    </item>
+
+    <!-- Saha Dış Çizgisi -->
+    <item android:top="12dp" android:bottom="12dp" android:left="12dp" android:right="12dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="1.5dp" android:color="#4DFFFFFF" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+
+    <!-- Orta Saha Çizgisi -->
+    <item android:top="220dp" android:left="12dp" android:right="12dp">
+        <shape android:shape="rectangle">
+            <size android:height="1.5dp" />
+            <solid android:color="#4DFFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Santra Çemberi -->
+    <item android:top="180dp" android:bottom="180dp" android:left="130dp" android:right="130dp">
+        <shape android:shape="oval">
+            <stroke android:width="1.5dp" android:color="#4DFFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Santra Noktası -->
+    <item android:top="218dp" android:bottom="218dp" android:left="168dp" android:right="168dp">
+        <shape android:shape="oval">
+            <solid android:color="#4DFFFFFF" />
+        </shape>
+    </item>
+</layer-list>

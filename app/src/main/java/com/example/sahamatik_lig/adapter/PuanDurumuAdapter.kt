@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sahamatik_lig.databinding.ItemPuanDurumuBinding
 import com.example.sahamatik_lig.model.TakimPuan
 
-class PuanDurumuAdapter(private val takimListesi: List<TakimPuan>) :
-    RecyclerView.Adapter<PuanDurumuAdapter.PuanViewHolder>() {
+class PuanDurumuAdapter(
+    private val takimListesi: List<TakimPuan>,
+    private val onTakimClick: (String) -> Unit
+) : RecyclerView.Adapter<PuanDurumuAdapter.PuanViewHolder>() {
 
     class PuanViewHolder(val binding: ItemPuanDurumuBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -36,6 +38,11 @@ class PuanDurumuAdapter(private val takimListesi: List<TakimPuan>) :
             tvMaglubiyet.text = takim.maglubiyet.toString()
             tvAveraj.text = takim.averaj.toString()
             tvPuan.text = takim.puan.toString()
+
+            // Satıra tıklanınca takım detayını aç
+            root.setOnClickListener {
+                onTakimClick(takim.takimAdi)
+            }
         }
     }
 

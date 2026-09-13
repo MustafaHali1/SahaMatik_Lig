@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sahamatik_lig.databinding.ItemMacBinding
 import com.example.sahamatik_lig.model.Mac
+import com.example.sahamatik_lig.view.MacDetailActivity
 
 class MacAdapter(
     private val macListesi: List<Mac>,
@@ -26,15 +27,20 @@ class MacAdapter(
         holder.binding.tvTakim2.text = mac.takim2
 
         if (mac.isOynandi) {
-            holder.binding.tvSkor.text = "${mac.skor1} - ${mac.skor2}"
+            holder.binding.tvMacSkor.text = "${mac.skor1} - ${mac.skor2}"
         } else {
-            holder.binding.tvSkor.text = "VS"
+            holder.binding.tvMacSkor.text = "VS"
         }
 
-        // Doğrudan root bileşene listener atıyoruz:
+        // Tıklanınca doğrudan MacDetailActivity'yi açıyoruz:
         holder.binding.root.setOnClickListener {
-            android.util.Log.d("TEST_TIKLAMA", "1. Adapter tıklamayı yakaladı: ${mac.takim1}")
-            onMacClick(mac)
+            val context = holder.itemView.context
+            val intent = android.content.Intent(context, MacDetailActivity::class.java).apply {
+                putExtra("EV_TAKIM", mac.takim1)
+                putExtra("DEP_TAKIM", mac.takim2)
+                putExtra("SKOR", if (mac.isOynandi) "${mac.skor1} - ${mac.skor2}" else "0 - 0")
+            }
+            context.startActivity(intent)
         }
     }
 

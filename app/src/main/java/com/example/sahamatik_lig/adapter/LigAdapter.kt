@@ -24,7 +24,7 @@ class LigAdapter(
 
     class LigViewHolder(private val binding: ItemLigBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(lig: Lig, onItemClick: (Lig) -> Unit) {
-            binding.recyclerViewTextView.text = lig.name
+            binding.tvLigDetay.text = lig.name
 
             // Karta tıklandığında seçilen ligi dışarı gönderiyoruz
             binding.root.setOnClickListener {

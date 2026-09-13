@@ -8,7 +8,8 @@ import com.example.sahamatik_lig.databinding.ItemGrupTakimSatirBinding
 import com.example.sahamatik_lig.model.Takim
 
 class GrupSiralamaAdapter(
-    private val grupMap: Map<String, List<Takim>>
+    private val grupMap: Map<String, List<Takim>>,
+    private val onTakimClick: (String) -> Unit
 ) : RecyclerView.Adapter<GrupSiralamaAdapter.GrupViewHolder>() {
 
     private val grupIsimleri = grupMap.keys.toList()
@@ -51,6 +52,11 @@ class GrupSiralamaAdapter(
             satirBinding.tvMaglubiyet.text = "${takim.maglubiyet}"
             satirBinding.tvAveraj.text = "${takim.averaj}"
             satirBinding.tvPuan.text = "${takim.puan}"
+
+            // Satıra tıklanınca takım detayını aç
+            satirBinding.root.setOnClickListener {
+                onTakimClick(takim.name)
+            }
 
             holder.binding.containerTakimSatirlari.addView(satirBinding.root)
         }
