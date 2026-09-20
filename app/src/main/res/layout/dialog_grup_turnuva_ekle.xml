@@ -2,38 +2,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_card"
+    android:elevation="8dp"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp">
 
-    <!-- Turnuva Adı -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Gruplu Turnuva Oluştur"
+        android:textColor="@color/primaryDark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Turnuva / Kupa Adı"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="12dp"
+        android:hint="Turnuva / Kupa Adı">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etTurnuvaAdi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"
+            android:textColor="@color/textDark"
+            android:textColorHint="@color/textSecondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Grup Sayısı (Kullanıcı Elle Girer) -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Kaç Grup Olsun? (Örn: 2, 3, 4)"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="12dp"
+        android:hint="Kaç Grup Olsun? (Örn: 2, 3, 4)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etGrupSayisi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="@color/textDark"
+            android:textColorHint="@color/textSecondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Takım Listesi Girişi -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +56,9 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:gravity="top|start"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:textColor="@color/textDark"
+            android:textColorHint="@color/textSecondary" />
     </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

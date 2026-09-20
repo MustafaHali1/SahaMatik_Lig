@@ -2,20 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_card"
+    android:elevation="8dp"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp">
 
-    <!-- Başlık -->
     <TextView
         android:id="@+id/tvDialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="Yeni Lig Oluştur (1/2)"
+        android:textColor="@color/primaryDark"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:textStyle="bold" />
 
-    <!-- ================= ADIM 1: LİG ADI & TAKIM SAYISI ================= -->
+    <!-- ADIM 1 -->
     <LinearLayout
         android:id="@+id/layoutStep1"
         android:layout_width="match_parent"
@@ -25,27 +27,36 @@
         <EditText
             android:id="@+id/etLeagueName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_dialog_card"
             android:hint="Lig Adı (Örn: Sultanbeyli Ligi)"
             android:inputType="textCapWords"
-            android:layout_marginBottom="12dp"/>
+            android:paddingHorizontal="12dp"
+            android:textColor="@color/textDark"
+            android:textColorHint="@color/textSecondary"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etTeamCount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_dialog_card"
             android:hint="Takım Sayısı (Örn: 4)"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:paddingHorizontal="12dp"
+            android:textColor="@color/textDark"
+            android:textColorHint="@color/textSecondary"
+            android:textSize="14sp" />
     </LinearLayout>
 
-    <!-- ================= ADIM 2: DİNAMİK TAKIM İSİMLERİ (Başta Gizli) ================= -->
+    <!-- ADIM 2 -->
     <ScrollView
         android:id="@+id/layoutStep2"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:visibility="gone">
 
-        <!-- Takım isimleri girdileri buraya kodla eklenecek -->
         <LinearLayout
             android:id="@+id/containerTeams"
             android:layout_width="match_parent"

@@ -9,7 +9,9 @@ import com.example.sahamatik_lig.model.Takim
 
 class GrupSiralamaAdapter(
     private val grupMap: Map<String, List<Takim>>,
-    private val onTakimClick: (String) -> Unit
+    private val ligAdi: String = "",
+    private val onTakimClick: (String) -> Unit,
+    private val onTakimSilClick: (String) -> Unit = {}
 ) : RecyclerView.Adapter<GrupSiralamaAdapter.GrupViewHolder>() {
 
     private val grupIsimleri = grupMap.keys.toList()
@@ -27,19 +29,14 @@ class GrupSiralamaAdapter(
         val grupAdi = grupIsimleri[position]
         val takimlar = grupMap[grupAdi] ?: emptyList()
 
-        // 1. Koyu gri başlığa grup adını yaz (Örn: A Grubu, B Grubu)
         holder.binding.tvGrupBaslik.text = grupAdi
-
-        // 2. Önceki görünümleri temizle (Hücre tekrar kullanıldığında üst üste binmesin)
         holder.binding.containerTakimSatirlari.removeAllViews()
 
-        // 3. Grubun takımlarını puan/averaj durumuna göre sırala
         val siraliTakimlar = takimlar.sortedWith(
             compareByDescending<Takim> { it.puan }
                 .thenByDescending { it.averaj }
         )
 
-        // 4. Her takımı dinamik olarak tablonun içine ekle
         val inflater = LayoutInflater.from(holder.itemView.context)
         siraliTakimlar.forEachIndexed { index, takim ->
             val satirBinding = ItemGrupTakimSatirBinding.inflate(inflater, holder.binding.containerTakimSatirlari, false)
@@ -53,9 +50,21 @@ class GrupSiralamaAdapter(
             satirBinding.tvAveraj.text = "${takim.averaj}"
             satirBinding.tvPuan.text = "${takim.puan}"
 
-            // Satıra tıklanınca takım detayını aç
-            satirBinding.root.setOnClickListener {
-                onTakimClick(takim.name)
+            // Takım logosunu yükle
+            val logoUri = com.example.sahamatik_lig.util.ImagePickerHelper.uriGetir(holder.itemView.context, "logo_${ligAdi}_${takim.name}")
+            if (logoUri != null) {
+                satirBinding.ivTakimLogo.setImageURI(logoUri)
+            } else {
+                satirBinding.ivTakimLogo.setImageResource(com.example.sahamatik_lig.R.drawable.bg_harf_avatar)
+            }
+
+            // Tiklama - takim detayina git
+            satirBinding.root.setOnClickListener { onTakimClick(takim.name) }
+
+            // Uzun tiklama - takim sil
+            satirBinding.root.setOnLongClickListener {
+                onTakimSilClick(takim.name)
+                true
             }
 
             holder.binding.containerTakimSatirlari.addView(satirBinding.root)

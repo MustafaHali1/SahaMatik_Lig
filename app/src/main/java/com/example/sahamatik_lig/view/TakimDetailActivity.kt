@@ -1,82 +1,95 @@
 package com.example.sahamatik_lig.view
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sahamatik_lig.databinding.ActivityTakimDetailBinding
 import com.example.sahamatik_lig.databinding.DialogOyuncuEkleBinding
+import com.example.sahamatik_lig.databinding.DialogSilmeOnayiBinding
 import com.example.sahamatik_lig.databinding.ItemOyuncuRosterBinding
 import com.example.sahamatik_lig.model.KadroRepository
 import com.example.sahamatik_lig.model.Oyuncu
 import com.example.sahamatik_lig.util.ImagePickerHelper
+import com.google.firebase.firestore.ListenerRegistration
+import java.io.ByteArrayOutputStream
+import android.util.Base64
 
 class TakimDetailActivity : AppCompatActivity() {
 
-    // ViewBinding referansı: activity_takim_detail.xml içindeki tüm bileşenlere erişir
     private lateinit var binding: ActivityTakimDetailBinding
-
-    // Sayfaya dışarıdan gelen veya varsayılan takım ve lig isimleri
-    private var takimAdi: String = "Alshabab"
-    private var ligAdi: String = "Sultanbeyli Ligi"
-
-    // Galeri üzerinden takım logosu seçip SharedPreferences'a kaydeden yardımcı sınıf
-    private val imagePicker = ImagePickerHelper(this) { uri ->
-        binding.ivTakimLogo.setImageURI(uri)
-        ImagePickerHelper.uriKaydet(this, "logo_$takimAdi", uri.toString())
-        Toast.makeText(this, "Logo güncellendi!", Toast.LENGTH_SHORT).show()
-    }
+    private var takimAdi: String = ""
+    private var ligAdi: String = ""
+    private var firestoreListener: ListenerRegistration? = null
+    private lateinit var imagePicker: ImagePickerHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // XML layout ViewBinding ile bağlanıyor
         binding = ActivityTakimDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Bir önceki sayfadan gelen takım ve lig isimlerini yakalıyoruz
-        takimAdi = intent.getStringExtra("TAKIM_ADI") ?: "Alshabab"
-        ligAdi = intent.getStringExtra("LIG_ADI") ?: "Sultanbeyli Ligi"
+        takimAdi = intent.getStringExtra("TAKIM_ADI") ?: ""
+        ligAdi = intent.getStringExtra("LIG_ADI") ?: ""
+
+        imagePicker = ImagePickerHelper(this) { uri ->
+            binding.ivTakimLogo.setImageURI(uri)
+            ImagePickerHelper.uriKaydet(this, "logo_${ligAdi}_$takimAdi", uri.toString())
+            logoFirestoreKaydet(uri)
+        }
 
         binding.tvTakimAdi.text = takimAdi
         binding.tvLigAdi.text = ligAdi
 
-        // Cihazda daha önce kaydedilmiş logo varsa ImagePickerHelper ile getiriyoruz
-        ImagePickerHelper.uriGetir(this, "logo_$takimAdi")?.let { uri ->
+        ImagePickerHelper.uriGetir(this, "logo_${ligAdi}_$takimAdi")?.let { uri ->
             binding.ivTakimLogo.setImageURI(uri)
         }
 
-        // Sol üstteki geri butonuna basılınca sayfayı kapatır
+        binding.ivTakimLogo.setOnClickListener { imagePicker.pickImage() }
+
         binding.btnGeri.setOnClickListener { finish() }
 
-        // Takım amblemine dokunulduğunda telefonun galerisini açar
-        binding.ivTakimLogo.setOnClickListener {
-            imagePicker.pickImage()
-        }
+        canliKadroTakibiBaslat()
 
-        // DOĞRUDAN VE NET TIKLAMA DİNLEYİCİSİ:
-        // Butona basıldığı an showOyuncuEkleDialog fonksiyonunu tetikler
-        binding.btnOyuncuEkle.setOnClickListener {
-            showOyuncuEkleDialog()
-        }
-
-        // Sayfa ilk açıldığında depoda kayıtlı olan oyuncuları ekrana basar
-        listeyiYenile()
+        binding.btnOyuncuEkle.setOnClickListener { showOyuncuEkleDialog() }
     }
 
-    // Seçilen takıma ait oyuncuları mevkilerine göre ayıran ve ekrana ekleyen fonksiyon
-    private fun listeyiYenile() {
-        // Yenilemeden önce eski görünümleri temizliyoruz ki üst üste binmesin
+    private fun logoFirestoreKaydet(uri: Uri) {
+        try {
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+            val base64String = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+            KadroRepository.takimLogosuGuncelle(
+                ligAdi, takimAdi, "logoBase64",
+                mapOf("logoBase64" to base64String)
+            )
+            Toast.makeText(this, "Logo guncellendi!", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Logo kaydedilemedi", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun canliKadroTakibiBaslat() {
+        firestoreListener = KadroRepository.takimOyunculariniCanliDinle(
+            ligAdi = ligAdi,
+            takimAdi = takimAdi,
+            onUpdate = { oyuncular -> kadroListesiniCiz(oyuncular) },
+            onError = { e -> Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_SHORT).show() }
+        )
+    }
+
+    private fun kadroListesiniCiz(oyuncular: List<Oyuncu>) {
         binding.containerKaleciler.removeAllViews()
         binding.containerDefanslar.removeAllViews()
         binding.containerOrtaSaha.removeAllViews()
         binding.containerForvet.removeAllViews()
 
-        // Sadece bu takıma ait oyuncuları çekiyoruz
-        val oyuncular = KadroRepository.takimOyunculariniGetir(takimAdi)
-
         for (oyuncu in oyuncular) {
-            // Oyuncunun mevkisine göre yerleşeceği LinearLayout kapsayıcısını belirliyoruz
             val hedefContainer = when (oyuncu.mevki.trim()) {
                 "Kaleci" -> binding.containerKaleciler
                 "Defans" -> binding.containerDefanslar
@@ -85,76 +98,143 @@ class TakimDetailActivity : AppCompatActivity() {
                 else -> binding.containerOrtaSaha
             }
 
-            // ÖNEMLİ: LayoutParams null kalıp çökmesin diye parent parametresine hedefContainer veriyoruz
             val itemBinding = ItemOyuncuRosterBinding.inflate(layoutInflater, hedefContainer, false)
-
             itemBinding.tvOyuncuIsim.text = oyuncu.isim
             itemBinding.tvOyuncuHarf.text = oyuncu.isim.firstOrNull()?.uppercase() ?: "?"
 
-            // Oyuncu satırına basıldığında isim ve mevkiyi tost mesajı olarak gösterir
+            // Kisa tiklama - bilgi
             itemBinding.root.setOnClickListener {
-                Toast.makeText(this, "${oyuncu.isim} (${oyuncu.mevki})", Toast.LENGTH_SHORT).show()
+                showOyuncuBilgisiDialog(oyuncu)
             }
 
-            // Kartı ilgili mevki kutusuna ekliyoruz
+            // Sil butonu tiklama
+            itemBinding.ivOyuncuSil.setOnClickListener {
+                showOyuncuSilDialog(oyuncu)
+            }
+
             hedefContainer.addView(itemBinding.root)
         }
     }
 
-    // ESKİDEN SORUNSUZ ÇALIŞAN KLASİK DİALOG YAPISININ HATASIZ VE EN GÜVENLİ HALİ
-    // %100 SAF VIEWBINDING İLE ÇALIŞAN ALT AÇILIR PANEL
-    private fun showOyuncuEkleDialog() {
-        // 1. ViewBinding ile XML dosyamızı şişiriyoruz
-        val dialogBinding = DialogOyuncuEkleBinding.inflate(layoutInflater)
+    // Oyuncu bilgi dialogu
+    private fun showOyuncuBilgisiDialog(oyuncu: Oyuncu) {
+        val mesaj = """
+            Isim: ${oyuncu.isim}
+            Mevki: ${oyuncu.mevki}
+            Gol: ${oyuncu.gol}
+            Sari Kart: ${oyuncu.sari}
+            Kirmizi Kart: ${oyuncu.kirmizi}
+        """.trimIndent()
 
-        // 2. Google Material BottomSheet penceresini oluşturuyoruz
-        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        AlertDialog.Builder(this)
+            .setTitle(oyuncu.isim)
+            .setMessage(mesaj)
+            .setPositiveButton("Tamam", null)
+            .show()
+    }
 
-        // 3. ViewBinding'in root View'ını doğrudan pencereye veriyoruz
-        dialog.setContentView(dialogBinding.root)
+    // Oyuncu silme dialogu - Binding ile
+    private fun showOyuncuSilDialog(oyuncu: Oyuncu) {
+        val dialogBinding = DialogSilmeOnayiBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
 
-        // 4. Başlığı takıma göre dinamik yapıyoruz
-        dialogBinding.tvDialogBaslik.text = "$takimAdi - Oyuncu Ekle"
+        dialogBinding.tvSilmeBaslik.text = "Oyuncu Sil"
+        dialogBinding.tvSilmeAciklama.text =
+            "${oyuncu.isim} isimli oyuncuyu silmek istediginize emin misiniz?\n\nBu islem geri alinamaz!"
 
-        // 5. Mevki Spinner'ını bağlıyoruz
-        val mevkiler = arrayOf("Kaleci", "Defans", "Orta Saha", "Forvet")
-        dialogBinding.spMevki.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            mevkiler
-        )
+        dialogBinding.btnSilOnay.setOnClickListener {
+            dialog.dismiss()
+            KadroRepository.oyuncuSil(
+                ligAdi, takimAdi, oyuncu.id,
+                onSuccess = {
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(this, "${oyuncu.isim} silindi", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onError = { e ->
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(this, "Silme basarisiz: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
 
-        // 6. İptal butonuna basılırsa pencereyi kapat
-        dialogBinding.btnDialogIptal.setOnClickListener {
+        dialogBinding.btnSilIptal.setOnClickListener {
             dialog.dismiss()
         }
 
-        // 7. Kaydet butonuna basıldığında oyuncuyu listeye ekle
-        dialogBinding.btnDialogKaydet.setOnClickListener {
-            val isim = dialogBinding.etOyuncuIsmi.text.toString().trim()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    /**
+     * Oyuncu ekleme dialog'u.
+     * Custom layout (dialog_oyuncu_ekle.xml) kullanır.
+     * Kaydet / İptal butonları layout içindedir — getButton() ile DEĞİL,
+     * binding üzerinden wiring yapılır.
+     */
+    private fun showOyuncuEkleDialog() {
+        val dialogBinding = DialogOyuncuEkleBinding.inflate(layoutInflater)
+
+        // Mevki spinner'ını doldur
+        val mevkiler = arrayOf("Kaleci", "Defans", "Orta Saha", "Forvet")
+        dialogBinding.spMevki.adapter = ArrayAdapter(
+            this, android.R.layout.simple_spinner_dropdown_item, mevkiler
+        )
+
+        // Dialog oluştur — setPositiveButton kullanmıyoruz,
+        // butonlar zaten custom layout içinde (dialog_oyuncu_ekle.xml)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        // Kaydet butonu
+        dialogBinding.btnKaydet.setOnClickListener {
+            val isim  = dialogBinding.etOyuncuIsmi.text.toString().trim()
             val mevki = dialogBinding.spMevki.selectedItem.toString()
 
-            if (isim.isNotEmpty()) {
-                val yeni = Oyuncu(
-                    id = KadroRepository.tumOyuncular.size + 1,
-                    isim = isim,
-                    mevki = mevki,
-                    takimAdi = takimAdi
-                )
-                // Depoya ekle
-                KadroRepository.oyuncuEkle(yeni)
-
-                // Ekrandaki kadroyu anında güncelle
-                listeyiYenile()
-
-                Toast.makeText(this, "$isim kadroya eklendi!", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            } else {
-                Toast.makeText(this, "Lütfen oyuncu ismi girin!", Toast.LENGTH_SHORT).show()
+            // İsim boş bırakılamaz
+            if (isim.isEmpty()) {
+                Toast.makeText(this, "İsim boş olamaz!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            // Yeni oyuncu oluştur ve Firestore'a kaydet
+            val yeniOyuncu = Oyuncu(
+                isim     = isim,
+                mevki    = mevki,
+                takimAdi = takimAdi,
+                ligAdi   = ligAdi
+            )
+            KadroRepository.oyuncuEkle(
+                oyuncu    = yeniOyuncu,
+                onSuccess = {
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(this, "$isim eklendi!", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onError = { e ->
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(this, "Kayıt başarısız: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+            dialog.dismiss()
         }
 
-        // Pencereyi ekranda aç
+        // İptal butonu
+        dialogBinding.btnIptal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        firestoreListener?.remove()
     }
 }

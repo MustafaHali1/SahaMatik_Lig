@@ -15,7 +15,6 @@ class IstatistiklerFragment : Fragment() {
     private var _binding: FragmentIstatistiklerBinding? = null
     private val binding get() = _binding!!
 
-    // Ortak ViewModel üzerinden lig puan durumunu dinliyoruz
     private val viewModel: LigViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -29,10 +28,12 @@ class IstatistiklerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val ligAdi = arguments?.getString(ARG_LIG_ADI) ?: ""
+
         viewModel.puanDurumu.observe(viewLifecycleOwner) { liste ->
             if (liste.isNullOrEmpty()) return@observe
 
-            // 1. En çok gol atanlar (atilanGol azalan sırada)
+            // En cok gol atanlar
             val enCokGolAtanlar = liste.sortedByDescending { it.atilanGol }
             binding.containerEnCokGolAtan.removeAllViews()
 
@@ -42,15 +43,23 @@ class IstatistiklerFragment : Fragment() {
                 satir.tvTakimAdi.text = takim.takimAdi
                 satir.tvDeger.text = takim.atilanGol.toString()
 
-                // Takımın logosu kayıtlıysa çek
-                ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")?.let { uri ->
-                    satir.ivTakimLogo.setImageURI(uri)
+                // Logo'yu ligAdi ile dene, yoksa sadece takimAdi ile dene
+                val logoUri = if (ligAdi.isNotEmpty()) {
+                    ImagePickerHelper.uriGetir(requireContext(), "logo_${ligAdi}_${takim.takimAdi}")
+                        ?: ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")
+                } else {
+                    ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")
+                }
+                if (logoUri != null) {
+                    satir.ivTakimLogo.setImageURI(logoUri)
+                } else {
+                    satir.ivTakimLogo.setImageResource(com.example.sahamatik_lig.R.drawable.bg_harf_avatar)
                 }
 
                 binding.containerEnCokGolAtan.addView(satir.root)
             }
 
-            // 2. En çok gol yiyenler (yenilenGol azalan sırada)
+            // En cok gol yiyenler
             val enCokGolYiyenler = liste.sortedByDescending { it.yenilenGol }
             binding.containerEnCokGolYiyen.removeAllViews()
 
@@ -60,9 +69,16 @@ class IstatistiklerFragment : Fragment() {
                 satir.tvTakimAdi.text = takim.takimAdi
                 satir.tvDeger.text = takim.yenilenGol.toString()
 
-                // Takımın logosu kayıtlıysa çek
-                ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")?.let { uri ->
-                    satir.ivTakimLogo.setImageURI(uri)
+                val logoUri = if (ligAdi.isNotEmpty()) {
+                    ImagePickerHelper.uriGetir(requireContext(), "logo_${ligAdi}_${takim.takimAdi}")
+                        ?: ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")
+                } else {
+                    ImagePickerHelper.uriGetir(requireContext(), "logo_${takim.takimAdi}")
+                }
+                if (logoUri != null) {
+                    satir.ivTakimLogo.setImageURI(logoUri)
+                } else {
+                    satir.ivTakimLogo.setImageResource(com.example.sahamatik_lig.R.drawable.bg_harf_avatar)
                 }
 
                 binding.containerEnCokGolYiyen.addView(satir.root)
@@ -76,6 +92,12 @@ class IstatistiklerFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() = IstatistiklerFragment()
+        private const val ARG_LIG_ADI = "lig_adi"
+
+        fun newInstance(ligAdi: String = "") = IstatistiklerFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_LIG_ADI, ligAdi)
+            }
+        }
     }
 }

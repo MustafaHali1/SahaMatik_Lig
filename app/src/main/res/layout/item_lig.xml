@@ -8,13 +8,6 @@
     android:orientation="horizontal"
     android:padding="14dp">
 
-    <ImageView
-        android:id="@+id/ivLigAmblem"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="6dp"
-        android:src="@android:drawable/ic_menu_gallery" />
-
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -26,9 +19,8 @@
             android:id="@+id/tvLigAdi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sultanbeyli Ligi"
             android:textColor="#16201C"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -36,10 +28,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="2 takım · 1. Tur"
+            android:text="2 takim"
             android:textColor="#5B6660"
             android:textSize="12.5sp" />
     </LinearLayout>
+
+    <!-- Sil butonu -->
+    <ImageView
+        android:id="@+id/ivSil"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="4dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="#C0392B"
+        android:contentDescription="Ligi Sil" />
 
     <ImageView
         android:id="@+id/ivOk"

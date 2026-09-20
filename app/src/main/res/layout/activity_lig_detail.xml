@@ -6,38 +6,40 @@
     android:background="#F5F3EC"
     android:orientation="vertical">
 
-    <!-- Üst Başlık Barı (Koyu Yeşil) -->
+    <!-- Üst Başlık Barı (Koyu Yeşil - Standart 36dp Üst Boşluk) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#0F3D2E"
         android:orientation="vertical"
-        android:paddingHorizontal="18dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="12dp">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="14dp">
 
-        <!-- Geri Butonu (tvBack) -->
+        <!-- Geri Butonu (Standart Altın Sarısı ← Geri) -->
         <TextView
             android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="center_vertical"
-            android:text="‹ Geri"
-            android:textColor="#F5F3EC"
-            android:textSize="14sp" />
+            android:padding="8dp"
+            android:text="← Geri"
+            android:textColor="#C7A233"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <!-- Dinamik Lig Başlığı (tvLigTitle) -->
         <TextView
             android:id="@+id/tvLigTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sultanbeyli Ligi"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="Lig Detayı"
             android:textColor="#F5F3EC"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -88,7 +90,7 @@
                 android:background="@android:color/transparent"
                 android:paddingVertical="10dp"
                 android:text="Maçlar"
-                android:textColor="#8CF5F3EC"
+                android:textColor="#8C9E95"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -113,7 +115,7 @@
                 android:background="@android:color/transparent"
                 android:paddingVertical="10dp"
                 android:text="İstatistikler"
-                android:textColor="#8CF5F3EC"
+                android:textColor="#8C9E95"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

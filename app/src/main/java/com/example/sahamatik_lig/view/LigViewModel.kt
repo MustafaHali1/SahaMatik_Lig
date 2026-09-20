@@ -3,6 +3,7 @@ package com.example.sahamatik_lig.view
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.sahamatik_lig.model.KadroRepository
 import com.example.sahamatik_lig.model.Mac
 import com.example.sahamatik_lig.model.TakimPuan
 import com.example.sahamatik_lig.util.FiksturHelper
@@ -14,7 +15,13 @@ class LigViewModel : ViewModel() {
     private val _puanDurumu = MutableLiveData<List<TakimPuan>>()
     val puanDurumu: LiveData<List<TakimPuan>> get() = _puanDurumu
 
+    private val _skorYuklendi = MutableLiveData<Boolean>(false)
+    val skorYuklendi: LiveData<Boolean> get() = _skorYuklendi
+
     private var takimlar = ArrayList<String>()
+    private var ligAdiCache: String = ""
+
+    // ─── LİG BAŞLATMA ─────────────────────────────────────────────────────────
 
     fun ligiBaslat(gelenTakimlar: List<String>) {
         if (takimlar.isEmpty()) {
@@ -26,12 +33,81 @@ class LigViewModel : ViewModel() {
         puanDurumunuHesapla()
     }
 
+    fun grupTurnuvasiBaslat(gruplar: Map<String, List<String>>) {
+        if (macListesi.isEmpty()) {
+            val yeniMaclar = ArrayList<Mac>()
+            var idSayac = 1
+
+            for ((_, takimListesi) in gruplar) {
+                for (takim in takimListesi) {
+                    if (!takimlar.contains(takim)) {
+                        takimlar.add(takim)
+                    }
+                }
+
+                for (i in 0 until takimListesi.size) {
+                    for (j in i + 1 until takimListesi.size) {
+                        yeniMaclar.add(
+                            Mac(
+                                id = idSayac++,
+                                hafta = 1,
+                                takim1 = takimListesi[i].trim(),
+                                takim2 = takimListesi[j].trim(),
+                                skor1 = null,
+                                skor2 = null,
+                                isOynandi = false
+                            )
+                        )
+                    }
+                }
+            }
+            macListesi.addAll(yeniMaclar)
+        }
+        puanDurumunuHesapla()
+    }
+
+    // ─── SKOR İŞLEMLERİ ───────────────────────────────────────────────────────
+
     fun skorGuncelle(mac: Mac, s1: Int, s2: Int) {
         mac.skor1 = s1
         mac.skor2 = s2
         mac.isOynandi = true
         puanDurumunuHesapla()
     }
+
+    /**
+     * Firestore'dan ligin maç sonuçlarını yükler ve macListesi'ne uygular.
+     * Bu fonksiyon fragment açılışında çağrılır — böylece uygulama
+     * kapanıp açıldığında eski skorlar geri yüklenir.
+     */
+    fun skorlariFirestoredenYukle(ligAdi: String) {
+        if (ligAdiCache == ligAdi && _skorYuklendi.value == true) return // Zaten yüklendi
+        ligAdiCache = ligAdi
+
+        KadroRepository.macSonuclariYukle(
+            ligAdi = ligAdi,
+            onResult = { sonuclar ->
+                for (sonuc in sonuclar) {
+                    val mac = macListesi.find {
+                        it.takim1 == sonuc.takim1 && it.takim2 == sonuc.takim2
+                    }
+                    if (mac != null && sonuc.isOynandi) {
+                        mac.skor1 = sonuc.skor1
+                        mac.skor2 = sonuc.skor2
+                        mac.isOynandi = true
+                    }
+                }
+                puanDurumunuHesapla()
+                _skorYuklendi.value = true
+            },
+            onError = {
+                // Hata olsa da mevcut hesaplama ile devam et
+                _skorYuklendi.value = true
+            }
+        )
+    }
+
+    // ─── PUAN TABLOSU ─────────────────────────────────────────────────────────
 
     fun puanDurumunuHesapla() {
         val tablo = LinkedHashMap<String, TakimPuan>()
@@ -97,37 +173,11 @@ class LigViewModel : ViewModel() {
         _puanDurumu.value = siraliListe
     }
 
-    fun grupTurnuvasiBaslat(gruplar: Map<String, List<String>>) {
-        if (macListesi.isEmpty()) {
-            val yeniMaclar = ArrayList<Mac>()
-            var idSayac = 1
+    // ─── TAKIM SİLME ──────────────────────────────────────────────────────────
 
-            for ((_, takimListesi) in gruplar) {
-                for (takim in takimListesi) {
-                    if (!takimlar.contains(takim)) {
-                        takimlar.add(takim)
-                    }
-                }
-
-                // Her grubun kendi içindeki maçları (Ön ek OLMADAN, temiz isimle)
-                for (i in 0 until takimListesi.size) {
-                    for (j in i + 1 until takimListesi.size) {
-                        yeniMaclar.add(
-                            Mac(
-                                id = idSayac++,
-                                hafta = 1,
-                                takim1 = takimListesi[i].trim(), // Temiz takım adı
-                                takim2 = takimListesi[j].trim(), // Temiz takım adı
-                                skor1 = null,
-                                skor2 = null,
-                                isOynadi = false
-                            )
-                        )
-                    }
-                }
-            }
-            macListesi.addAll(yeniMaclar)
-        }
+    fun takimSil(takimAdi: String) {
+        takimlar.remove(takimAdi)
+        macListesi.removeAll { it.takim1 == takimAdi || it.takim2 == takimAdi }
         puanDurumunuHesapla()
     }
 }

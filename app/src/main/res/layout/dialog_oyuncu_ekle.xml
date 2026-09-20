@@ -2,63 +2,60 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
+    android:background="@drawable/bg_dialog_card"
+    android:elevation="8dp"
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Diyalog Başlığı -->
     <TextView
         android:id="@+id/tvDialogBaslik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="Yeni Oyuncu Ekle"
-        android:textColor="#0F3D2E"
+        android:textColor="@color/primaryDark"
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <!-- Oyuncu Adı Etiketi -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Oyuncu Adı Soyadı"
-        android:textColor="#16201C"
+        android:textColor="@color/textDark"
         android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Oyuncu Adı Input -->
     <EditText
         android:id="@+id/etOyuncuIsmi"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="6dp"
-        android:background="@android:drawable/editbox_background_normal"
+        android:background="@drawable/bg_dialog_card"
         android:hint="Örn: Kerem"
         android:inputType="textPersonName"
         android:paddingHorizontal="12dp"
-        android:textColor="#16201C"
+        android:textColor="@color/textDark"
+        android:textColorHint="@color/textSecondary"
         android:textSize="14sp" />
 
-    <!-- Mevki Etiketi -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Mevki Seçin"
-        android:textColor="#16201C"
+        android:textColor="@color/textDark"
         android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Mevki Spinner -->
     <Spinner
         android:id="@+id/spMevki"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="6dp"
-        android:background="@android:drawable/btn_dropdown"
+        android:background="@drawable/bg_dialog_card"
         android:paddingHorizontal="8dp" />
 
-    <!-- İşlem Butonları (Kaydet / İptal) -->
+    <!-- Buton satırı -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,22 +63,37 @@
         android:gravity="end"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnDialogIptal"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+        <!-- İptal butonu -->
+        <TextView
+            android:id="@+id/btnIptal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
             android:text="İptal"
-            android:textColor="#757575" />
+            android:textColor="@color/textSecondary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
-        <Button
-            android:id="@+id/btnDialogKaydet"
+        <!-- Kaydet butonu -->
+        <TextView
+            android:id="@+id/btnKaydet"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_marginStart="8dp"
-            android:backgroundTint="#0F3D2E"
-            android:text="Kadroya Ekle"
-            android:textColor="#FFFFFF" />
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:background="@drawable/bg_btn_oyuncu_ekle"
+            android:text="Kaydet"
+            android:textColor="@color/successGreen"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
+
     </LinearLayout>
 
 </LinearLayout>

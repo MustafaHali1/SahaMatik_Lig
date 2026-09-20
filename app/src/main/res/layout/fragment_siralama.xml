@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="#F5F3EC">
 
     <!-- Tablo Başlıkları -->
     <LinearLayout
@@ -16,12 +16,12 @@
 
         <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="#" android:textStyle="bold" android:textColor="#000000"/>
         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="2" android:text="Takım" android:textStyle="bold" android:textColor="#000000"/>
-        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="O" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
-        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="G" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
-        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="B" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
-        <TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="M" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
-        <TextView android:layout_width="32dp" android:layout_height="wrap_content" android:text="+/-" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
-        <TextView android:layout_width="32dp" android:layout_height="wrap_content" android:text="Puan" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="26dp" android:layout_height="wrap_content" android:text="O" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="26dp" android:layout_height="wrap_content" android:text="G" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="26dp" android:layout_height="wrap_content" android:text="B" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="26dp" android:layout_height="wrap_content" android:text="M" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="34dp" android:layout_height="wrap_content" android:text="+/-" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
+        <TextView android:layout_width="34dp" android:layout_height="wrap_content" android:text="Puan" android:textStyle="bold" android:gravity="center" android:textColor="#000000"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

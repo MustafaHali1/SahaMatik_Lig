@@ -29,4 +29,15 @@
         android:textColor="#16201C"
         android:textSize="15sp"
         android:textStyle="bold" />
+
+    <!-- Sil butonu -->
+    <ImageView
+        android:id="@+id/ivOyuncuSil"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="4dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="#C0392B"
+        android:contentDescription="Oyuncuyu Sil" />
 </LinearLayout>

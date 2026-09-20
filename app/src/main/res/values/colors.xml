@@ -2,4 +2,30 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Ana Uygulama Renkleri -->
+    <color name="primaryDark">#0F3D2E</color>
+    <color name="accentGold">#C7A233</color>
+    <color name="bgLight">#F5F3EC</color>
+    <color name="textDark">#16201C</color>
+    <color name="textSecondary">#5B6660</color>
+    <color name="textLight">#8CAA9A</color>
+
+    <!-- Takim Renkleri -->
+    <color name="teamHome">#2E7D4F</color>
+    <color name="teamAway">#C0392B</color>
+
+    <!-- Durum Renkleri -->
+    <color name="goalGreen">#2E7D4F</color>
+    <color name="cardYellow">#F1C40F</color>
+    <color name="cardRed">#E74C3C</color>
+    <color name="subBlue">#3498DB</color>
+    <color name="deleteRed">#C0392B</color>
+    <color name="successGreen">#1E7A4D</color>
+
+    <!-- Dialog -->
+    <color name="dialogBg">#FFFFFF</color>
+    <color name="dialogTitle">#1A1A1A</color>
+    <color name="dialogText">#666666</color>
+    <color name="dialogDivider">#E0E0E0</color>
 </resources>

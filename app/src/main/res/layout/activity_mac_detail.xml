@@ -3,37 +3,63 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F3EC"
+    android:background="#0A1C14"
     android:orientation="vertical">
 
-    <!-- ÜST SKOR VE MAÇ BAŞLIĞI -->
+    <!-- ═══════════════════════════════════════════════════
+         1. ÜST SKOR VE TOOLBAR ALANI
+         ═══════════════════════════════════════════════════ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#0F3D2E"
+        android:elevation="6dp"
         android:orientation="vertical"
-        android:paddingHorizontal="18dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="12dp">
 
-        <TextView
-            android:id="@+id/tvBack"
-            android:layout_width="wrap_content"
+        <!-- Toolbar Geri & Başlık (Standart 36dp Üst Boşluk) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="‹ Geri"
-            android:textColor="#F5F3EC"
-            android:textSize="14sp" />
+            android:paddingHorizontal="16dp"
+            android:paddingTop="36dp"
+            android:paddingBottom="8dp">
 
-        <!-- Skor Kartı -->
+            <TextView
+                android:id="@+id/tvBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:text="← Geri"
+                android:textColor="#C7A233"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvHaftaLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:letterSpacing="0.1"
+                android:text="1. Hafta • Maç Detayı"
+                android:textColor="#8CAA9A"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Canlı Skor Kartı -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="4dp">
 
             <!-- Ev Sahibi -->
             <LinearLayout
@@ -43,11 +69,23 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/ivEvLogo"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_gallery" />
+                <androidx.cardview.widget.CardView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#1B4D3E"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="#C7A233">
+
+                    <ImageView
+                        android:id="@+id/ivEvLogo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/bg_harf_avatar" />
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvEvAdi"
@@ -55,30 +93,48 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:ellipsize="end"
+                    android:gravity="center"
                     android:maxLines="1"
-                    android:text="Gedik FC"
+                    android:maxWidth="110dp"
+                    android:text="Ev Sahibi"
                     android:textColor="#F5F3EC"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Skor Göstergesi -->
+            <!-- Skor Gösterimi -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#165B39"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp">
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp">
 
                 <TextView
-                    android:id="@+id/tvSkor"
+                    android:id="@+id/tvEvSkor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:letterSpacing="0.05"
-                    android:text="0 - 0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="26sp"
+                    android:text="0"
+                    android:textColor="#C7A233"
+                    android:textSize="36sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:text=":"
+                    android:textColor="#8CAA9A"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDepSkor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#C7A233"
+                    android:textSize="36sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -90,11 +146,23 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/ivDepLogo"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@android:drawable/ic_menu_gallery" />
+                <androidx.cardview.widget.CardView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#1B4D3E"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="#C7A233">
+
+                    <ImageView
+                        android:id="@+id/ivDepLogo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/bg_harf_avatar" />
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvDepAdi"
@@ -102,110 +170,152 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:ellipsize="end"
+                    android:gravity="center"
                     android:maxLines="1"
-                    android:text="Alshabab"
+                    android:maxWidth="110dp"
+                    android:text="Deplasman"
                     android:textColor="#F5F3EC"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <View
+    <!-- ═══════════════════════════════════════════════════
+         2. TAKIM SEÇİCİ TOGGLE (Ev Sahibi / Deplasman)
+         ═══════════════════════════════════════════════════ -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="2.5dp"
-        android:background="#C7A233" />
+        android:layout_height="wrap_content"
+        android:background="#122E22"
+        android:orientation="horizontal"
+        android:padding="6dp">
 
-    <!-- SAHA VE KULÜBELER KAYDIRMA BÖLÜMÜ -->
+        <!-- Ev Sahibi Tab Buton -->
+        <TextView
+            android:id="@+id/btnTabEv"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_lig_kart"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Ev Sahibi Kadro"
+            android:textColor="#0F3D2E"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- Deplasman Tab Buton -->
+        <TextView
+            android:id="@+id/btnTabDep"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Deplasman Kadro"
+            android:textColor="#8CAA9A"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- ═══════════════════════════════════════════════════
+         3. SCROLLABLE İÇERİK (Saha + Yedekler + Olaylar)
+         ═══════════════════════════════════════════════════ -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
-            <!-- TEK VE BÜTÜN FUTBOL SAHASI -->
+            <!-- Başlık: Seçili Takım & Halı Saha Dizilişi -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="6dp">
+
+                <TextView
+                    android:id="@+id/tvSeciliTakimBaslik"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ev Sahibi • Halı Saha (7 Kişi)"
+                    android:textColor="#F5F3EC"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDizilisBilgi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_format_secim_kart"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:text="1 - 2 - 2 - 2"
+                    android:textColor="#0F3D2E"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ⚽ HALI SAHA (7 KİŞİLİK DİZİLİŞ) ⚽ -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="440dp"
-                android:background="@drawable/bg_pro_pitch">
+                android:layout_height="400dp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_pro_pitch"
+                android:padding="8dp">
 
+                <!-- 4 Hatlı Formasyon Düzeni (Forvet, Orta Saha, Defans, Kaleci) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingVertical="14dp">
+                    android:weightSum="4">
 
-                    <!-- 1. YARI: EV SAHİBİ (Kalecisi En Üstte) -->
+                    <!-- HAT 1: FORVETLER (1 veya 2 Kişi) -->
                     <LinearLayout
-                        android:id="@+id/evKaleciRow"
+                        android:id="@+id/rowForvet"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="horizontal" />
 
+                    <!-- HAT 2: ORTA SAHA (2 veya 3 Kişi) -->
                     <LinearLayout
-                        android:id="@+id/evDefansRow"
+                        android:id="@+id/rowOrtaSaha"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="horizontal" />
 
+                    <!-- HAT 3: DEFANSLAR (2 Kişi) -->
                     <LinearLayout
-                        android:id="@+id/evOrtaRow"
+                        android:id="@+id/rowDefans"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="horizontal" />
 
+                    <!-- HAT 4: KALECİ (1 Kişi) -->
                     <LinearLayout
-                        android:id="@+id/evForvetRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="horizontal" />
-
-                    <!-- ORTA SAHA ÇİZGİ BOŞLUĞU -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp" />
-
-                    <!-- 2. YARI: DEPLASMAN (Kalecisi En Altta) -->
-                    <LinearLayout
-                        android:id="@+id/depForvetRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="horizontal" />
-
-                    <LinearLayout
-                        android:id="@+id/depOrtaRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="horizontal" />
-
-                    <LinearLayout
-                        android:id="@+id/depDefansRow"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="horizontal" />
-
-                    <LinearLayout
-                        android:id="@+id/depKaleciRow"
+                        android:id="@+id/rowKaleci"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -213,87 +323,147 @@
                         android:orientation="horizontal" />
 
                 </LinearLayout>
-            </FrameLayout>
 
-            <!-- YEDEKLER BÖLÜMÜ -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <View
-                    android:layout_width="4dp"
-                    android:layout_height="14dp"
-                    android:background="#C7A233" />
-
+                <!-- Saha Boş Uyarısı -->
                 <TextView
+                    android:id="@+id/tvSahaBosUyari"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Yedek Kulübeleri"
-                    android:textColor="#16201C"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:layout_gravity="center"
+                    android:background="#CC000000"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp"
+                    android:text="Bu takımda henüz oyuncu yok.\nTakım detayından oyuncu ekleyebilirsiniz."
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:visibility="gone" />
 
+            </FrameLayout>
+
+            <!-- ═══════════════════════════════════════════════════
+                 4. Y. KULÜBESİ (Yedek Kulübesi Kartı - Sofascore Tarzı)
+                 ═══════════════════════════════════════════════════ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_format_secim_kart"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <!-- Sol: Ev Sahibi Kulübesi -->
+                <!-- Başlık -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tvYedekEvBaslik"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"
-                        android:text="Gedik FC"
-                        android:textColor="#5B6660"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/containerEvYedekler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </LinearLayout>
-
-                <!-- Sağ: Deplasman Kulübesi -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                        android:text="🪑"
+                        android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/tvYedekDepBaslik"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"
-                        android:text="Alshabab"
-                        android:textColor="#5B6660"
-                        android:textSize="12sp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="Y. Kulübesi"
+                        android:textColor="#16201C"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <LinearLayout
-                        android:id="@+id/containerDepYedekler"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tvYedekSayisi"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:text="0 Oyuncu"
+                        android:textColor="#5B6660"
+                        android:textSize="12sp" />
                 </LinearLayout>
+
+                <!-- Yedek Oyuncuların Yatay Listesi -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/containerYedekler"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <!-- Yedek Yok Mesajı -->
+                <TextView
+                    android:id="@+id/tvYedekYok"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Kulübede yedek oyuncu bulunmuyor."
+                    android:textColor="#5B6660"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- ═══════════════════════════════════════════════════
+                 5. MAÇ OLAYLARI ŞERİDİ (Timeline)
+                 ═══════════════════════════════════════════════════ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_format_secim_kart"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="Maç Olayları"
+                        android:textColor="#16201C"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOlayYok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Henüz olay yok"
+                        android:textColor="#5B6660"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOlaylar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </LinearLayout>

@@ -30,7 +30,7 @@ object FiksturHelper {
                             hafta = hafta,
                             takim1 = t1,
                             takim2 = t2,
-                            isOynadi = false
+                            isOynandi = false
                         )
                     )
                 }

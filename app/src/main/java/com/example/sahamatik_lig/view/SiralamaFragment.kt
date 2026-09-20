@@ -1,16 +1,20 @@
 package com.example.sahamatik_lig.view
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sahamatik_lig.adapter.GrupSiralamaAdapter
 import com.example.sahamatik_lig.adapter.PuanDurumuAdapter
 import com.example.sahamatik_lig.databinding.FragmentSiralamaBinding
+import com.example.sahamatik_lig.databinding.DialogSilmeOnayiBinding
+import com.example.sahamatik_lig.model.KadroRepository
 import com.example.sahamatik_lig.model.Takim
 import com.example.sahamatik_lig.model.TakimPuan
 
@@ -22,7 +26,6 @@ class SiralamaFragment : Fragment() {
     private var takimIsimleri: ArrayList<String>? = null
     private var gruplarMap: HashMap<String, ArrayList<String>>? = null
 
-    // Activity seviyesinde tek bir ViewModel kullanıyoruz
     private val viewModel: LigViewModel by activityViewModels()
 
     private lateinit var puanAdapter: PuanDurumuAdapter
@@ -51,17 +54,14 @@ class SiralamaFragment : Fragment() {
         binding.rvPuanDurumu.layoutManager = LinearLayoutManager(requireContext())
 
         if (formatTipi == "GRUP" && gruplarMap != null) {
-            // Grupları ViewModel'a tanıt (eğer maçlar henüz başlamadıysa)
             viewModel.grupTurnuvasiBaslat(gruplarMap!!)
 
-            // Puan durumu değiştikçe grup tablolarını baştan oluştur ve bas
             viewModel.puanDurumu.observe(viewLifecycleOwner) { siraliListe ->
                 val grupTakimlariMap = LinkedHashMap<String, List<Takim>>()
 
                 for ((grupAdi, takimAdlari) in gruplarMap!!) {
                     val guncelTakimlar = ArrayList<Takim>()
                     for (takimAdi in takimAdlari) {
-                        // Boşlukları temizleyerek birebir eşleştir
                         val p = siraliListe.find { it.takimAdi.trim() == takimAdi.trim() }
                         guncelTakimlar.add(
                             Takim(
@@ -80,17 +80,23 @@ class SiralamaFragment : Fragment() {
                     grupTakimlariMap[grupAdi] = guncelTakimlar
                 }
 
-                // Adapter'ı tıklama desteğiyle bağla
-                binding.rvPuanDurumu.adapter = GrupSiralamaAdapter(grupTakimlariMap) { tiklananTakimAdi ->
-                    takimDetayinaGit(tiklananTakimAdi)
-                }
+                val ligAdi = arguments?.getString(ARG_LIG_ADI) ?: ""
+                binding.rvPuanDurumu.adapter = GrupSiralamaAdapter(
+                    grupMap = grupTakimlariMap,
+                    ligAdi = ligAdi,
+                    onTakimClick = { tiklananTakimAdi -> takimDetayinaGit(tiklananTakimAdi) },
+                    onTakimSilClick = { tiklananTakimAdi -> showTakimSilDialog(tiklananTakimAdi) }
+                )
             }
 
         } else {
-            // Klasik Lig Düzeni - Tıklama desteğiyle başlat
-            puanAdapter = PuanDurumuAdapter(puanListesi) { tiklananTakimAdi ->
-                takimDetayinaGit(tiklananTakimAdi)
-            }
+            val ligAdi = arguments?.getString(ARG_LIG_ADI) ?: ""
+            puanAdapter = PuanDurumuAdapter(
+                takimListesi = puanListesi,
+                ligAdi = ligAdi,
+                onTakimClick = { tiklananTakimAdi -> takimDetayinaGit(tiklananTakimAdi) },
+                onTakimSilClick = { tiklananTakimAdi -> showTakimSilDialog(tiklananTakimAdi) }
+            )
             binding.rvPuanDurumu.adapter = puanAdapter
 
             takimIsimleri?.let {
@@ -110,9 +116,48 @@ class SiralamaFragment : Fragment() {
     private fun takimDetayinaGit(takimAdi: String) {
         val intent = Intent(requireContext(), TakimDetailActivity::class.java).apply {
             putExtra("TAKIM_ADI", takimAdi)
-            putExtra("LIG_ADI", "Sultanbeyli Ligi")
+            putExtra("LIG_ADI", arguments?.getString(ARG_LIG_ADI) ?: "")
         }
         startActivity(intent)
+    }
+
+    // Takim silme dialogu - Binding ile
+    private fun showTakimSilDialog(takimAdi: String) {
+        val ligAdi = arguments?.getString(ARG_LIG_ADI) ?: ""
+
+        val dialogBinding = DialogSilmeOnayiBinding.inflate(LayoutInflater.from(requireContext()))
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.tvSilmeBaslik.text = "Takimi Sil"
+        dialogBinding.tvSilmeAciklama.text =
+            "$takimAdi takimini ve tum oyuncularini silmek istediginize emin misiniz?\n\nBu islem geri alinamaz!"
+
+        dialogBinding.btnSilOnay.setOnClickListener {
+            dialog.dismiss()
+            KadroRepository.takimSil(
+                ligAdi, takimAdi,
+                onSuccess = {
+                    viewModel.takimSil(takimAdi)
+                    if (isAdded) {
+                        Toast.makeText(requireContext(), "$takimAdi silindi", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onError = { e ->
+                    if (isAdded) {
+                        Toast.makeText(requireContext(), "Silme basarisiz: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
+
+        dialogBinding.btnSilIptal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     override fun onDestroyView() {
@@ -124,22 +169,25 @@ class SiralamaFragment : Fragment() {
         private const val ARG_FORMAT = "format_tipi"
         private const val ARG_TAKIMLAR = "takimlar"
         private const val ARG_GRUPLAR = "gruplar_map"
+        private const val ARG_LIG_ADI = "lig_adi"
 
         @JvmStatic
-        fun newInstance(takimlar: ArrayList<String>) =
+        fun newInstance(takimlar: ArrayList<String>, ligAdi: String = "") =
             SiralamaFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_FORMAT, "KLASIK")
                     putStringArrayList(ARG_TAKIMLAR, takimlar)
+                    putString(ARG_LIG_ADI, ligAdi)
                 }
             }
 
         @JvmStatic
-        fun newInstanceGrup(gruplar: HashMap<String, ArrayList<String>>) =
+        fun newInstanceGrup(gruplar: HashMap<String, ArrayList<String>>, ligAdi: String = "") =
             SiralamaFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_FORMAT, "GRUP")
                     putSerializable(ARG_GRUPLAR, gruplar)
+                    putString(ARG_LIG_ADI, ligAdi)
                 }
             }
     }

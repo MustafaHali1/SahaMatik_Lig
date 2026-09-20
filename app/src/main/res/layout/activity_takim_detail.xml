@@ -5,58 +5,89 @@
     android:background="#F5F3EC"
     android:orientation="vertical">
 
-    <!-- Üst Koyu Yeşil Başlık Alanı -->
+    <!-- Üst Koyu Yeşil Başlık Alanı (Geniş & Heybetli Header) -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#0F3D2E"
-        android:paddingHorizontal="18dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="24dp">
+        android:elevation="8dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="32dp">
 
-        <ImageView
+        <TextView
             android:id="@+id/btnGeri"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_revert" />
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:text="← Geri"
+            android:textColor="#C7A233"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <!-- Takım Logo Alanı -->
-            <ImageView
-                android:id="@+id/ivTakimLogo"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginBottom="8dp"
-                android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery" />
+            <!-- Heybetli & Büyük Takım Logo Alanı (Dairesel Kart) -->
+            <androidx.cardview.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="108dp"
+                android:layout_height="108dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="54dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#164D3A"
+                app:strokeWidth="3dp"
+                app:strokeColor="#C7A233">
 
-            <!-- Takım İsmi -->
+                <ImageView
+                    android:id="@+id/ivTakimLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_harf_avatar" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Logo Değiştir İpucu -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="📷 Logoyu değiştirmek için dokunun"
+                android:textColor="#8CAA9A"
+                android:textSize="11sp" />
+
+            <!-- Takım İsmi (Büyük ve Heybetli) -->
             <TextView
                 android:id="@+id/tvTakimAdi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alshabab"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:text="Takım Adı"
                 android:textColor="#F5F3EC"
-                android:textSize="22sp"
+                android:textSize="26sp"
                 android:textStyle="bold" />
 
-            <!-- Lig İsmi -->
+            <!-- Lig İsmi (Altın Sarısı) -->
             <TextView
                 android:id="@+id/tvLigAdi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Sultanbeyli Ligi"
+                android:layout_marginTop="4dp"
+                android:text="Lig İsmi"
                 android:textColor="#C7A233"
-                android:textSize="13sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </RelativeLayout>
 

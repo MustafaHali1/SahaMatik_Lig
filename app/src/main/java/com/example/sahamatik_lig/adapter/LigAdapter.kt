@@ -8,7 +8,9 @@ import com.example.sahamatik_lig.model.Lig
 
 class LigAdapter(
     private val ligList: List<Lig>,
-    private val onItemClick: (Lig) -> Unit // Tıklama olayını MainActivity'ye ileten lambda
+    private val onItemClick: (Lig) -> Unit,
+    private val onItemLongClick: (Lig) -> Unit,
+    private val onItemSilClick: (Lig) -> Unit
 ) : RecyclerView.Adapter<LigAdapter.LigViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LigViewHolder {
@@ -17,25 +19,27 @@ class LigAdapter(
     }
 
     override fun onBindViewHolder(holder: LigViewHolder, position: Int) {
-        holder.bind(ligList[position], onItemClick)
+        holder.bind(ligList[position], onItemClick, onItemLongClick, onItemSilClick)
     }
 
     override fun getItemCount(): Int = ligList.size
 
     class LigViewHolder(private val binding: ItemLigBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(lig: Lig, onItemClick: (Lig) -> Unit) {
-            binding.tvLigDetay.text = lig.name
+        fun bind(lig: Lig, onItemClick: (Lig) -> Unit, onItemLongClick: (Lig) -> Unit, onItemSilClick: (Lig) -> Unit) {
+            binding.tvLigAdi.text = lig.name
+            binding.tvLigDetay.text = "${lig.takimsayisi} Takim - ${lig.formatTipi}"
 
-            // Karta tıklandığında seçilen ligi dışarı gönderiyoruz
-            binding.root.setOnClickListener {
-                onItemClick(lig)
+            // Kisa tiklama - lige git
+            binding.root.setOnClickListener { onItemClick(lig) }
+
+            // Uzun tiklama
+            binding.root.setOnLongClickListener {
+                onItemLongClick(lig)
+                true
             }
-        }
-    }
 
-    companion object {
-        fun notifyDataSetChanged() {
-            TODO("Not yet implemented")
+            // Sil butonu tiklama
+            binding.ivSil.setOnClickListener { onItemSilClick(lig) }
         }
     }
 }

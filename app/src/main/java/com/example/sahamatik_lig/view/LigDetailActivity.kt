@@ -12,16 +12,14 @@ class LigDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLigDetailBinding
     private lateinit var siralamaFragment: SiralamaFragment
     private lateinit var maclarFragment: MaclarFragment
-
-    private val istatistiklerFragment = IstatistiklerFragment.newInstance()
+    private lateinit var istatistiklerFragment: IstatistiklerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityLigDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val ligAdi = intent.getStringExtra("LIG_ADI") ?: "LİG DETAY"
+        val ligAdi = intent.getStringExtra("LIG_ADI") ?: "LIG DETAY"
         val formatTipi = intent.getStringExtra("FORMAT_TIPI") ?: "KLASIK"
         val takimlar = intent.getStringArrayListExtra("TAKIMLAR") ?: arrayListOf()
 
@@ -33,12 +31,14 @@ class LigDetailActivity : AppCompatActivity() {
         binding.tvBack.setOnClickListener { finish() }
 
         if (formatTipi == "GRUP" && gruplarMap != null) {
-            siralamaFragment = SiralamaFragment.newInstanceGrup(gruplarMap)
-            maclarFragment = MaclarFragment.newInstanceGrup(gruplarMap)
+            siralamaFragment = SiralamaFragment.newInstanceGrup(gruplarMap, ligAdi)
+            maclarFragment = MaclarFragment.newInstanceGrup(gruplarMap, ligAdi)
         } else {
-            siralamaFragment = SiralamaFragment.newInstance(takimlar)
-            maclarFragment = MaclarFragment.newInstance(takimlar)
+            siralamaFragment = SiralamaFragment.newInstance(takimlar, ligAdi)
+            maclarFragment = MaclarFragment.newInstance(takimlar, ligAdi)
         }
+
+        istatistiklerFragment = IstatistiklerFragment.newInstance(ligAdi)
 
         replaceFragment(siralamaFragment)
         setButtonSelected(0)
