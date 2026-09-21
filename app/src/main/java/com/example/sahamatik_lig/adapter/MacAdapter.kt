@@ -1,11 +1,13 @@
 package com.example.sahamatik_lig.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sahamatik_lig.databinding.ItemMacBinding
 import com.example.sahamatik_lig.model.Mac
 import com.example.sahamatik_lig.util.ImagePickerHelper
+import com.example.sahamatik_lig.view.TakimDetailActivity
 
 class MacAdapter(
     private val macListesi: List<Mac>,
@@ -44,6 +46,28 @@ class MacAdapter(
         if (depLogoUri != null) {
             holder.binding.ivDepLogo.setImageURI(depLogoUri)
         }
+
+        // Ev sahibi takım detayına git
+        val evDetayAc = {
+            val intent = Intent(context, TakimDetailActivity::class.java).apply {
+                putExtra("TAKIM_ADI", mac.takim1)
+                putExtra("LIG_ADI", ligAdi)
+            }
+            context.startActivity(intent)
+        }
+        holder.binding.tvTakim1.setOnClickListener { evDetayAc() }
+        holder.binding.ivEvLogo.setOnClickListener { evDetayAc() }
+
+        // Deplasman takım detayına git
+        val depDetayAc = {
+            val intent = Intent(context, TakimDetailActivity::class.java).apply {
+                putExtra("TAKIM_ADI", mac.takim2)
+                putExtra("LIG_ADI", ligAdi)
+            }
+            context.startActivity(intent)
+        }
+        holder.binding.tvTakim2.setOnClickListener { depDetayAc() }
+        holder.binding.ivDepLogo.setOnClickListener { depDetayAc() }
 
         // Tıklama — MacDetailActivity'yi Fragment üzerinden açacak
         holder.binding.root.setOnClickListener {

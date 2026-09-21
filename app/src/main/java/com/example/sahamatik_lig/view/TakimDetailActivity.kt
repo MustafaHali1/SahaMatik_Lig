@@ -116,21 +116,27 @@ class TakimDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Oyuncu bilgi dialogu
+    // Oyuncu bilgi dialogu — Ortak Tasarımlı
     private fun showOyuncuBilgisiDialog(oyuncu: Oyuncu) {
-        val mesaj = """
-            Isim: ${oyuncu.isim}
-            Mevki: ${oyuncu.mevki}
-            Gol: ${oyuncu.gol}
-            Sari Kart: ${oyuncu.sari}
-            Kirmizi Kart: ${oyuncu.kirmizi}
-        """.trimIndent()
+        val dialogBinding = com.example.sahamatik_lig.databinding.DialogOyuncuBilgiBinding.inflate(layoutInflater)
 
-        AlertDialog.Builder(this)
-            .setTitle(oyuncu.isim)
-            .setMessage(mesaj)
-            .setPositiveButton("Tamam", null)
-            .show()
+        dialogBinding.tvOyuncuIsim.text = oyuncu.isim
+        dialogBinding.tvOyuncuMevki.text = "${oyuncu.mevki} • $takimAdi"
+        dialogBinding.tvOyuncuHarf.text = oyuncu.isim.firstOrNull()?.uppercase() ?: "?"
+        dialogBinding.tvGolSayisi.text = oyuncu.gol.toString()
+        dialogBinding.tvSariSayisi.text = oyuncu.sari.toString()
+        dialogBinding.tvKirmiziSayisi.text = oyuncu.kirmizi.toString()
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.btnKapat.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     // Oyuncu silme dialogu - Binding ile

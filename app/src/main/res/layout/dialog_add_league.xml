@@ -5,56 +5,75 @@
     android:background="@drawable/bg_dialog_card"
     android:elevation="8dp"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="22dp">
 
+    <!-- Başlık -->
     <TextView
         android:id="@+id/tvDialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Yeni Lig Oluştur (1/2)"
-        android:textColor="@color/primaryDark"
+        android:text="⚽ Yeni Lig Oluştur (1/2)"
+        android:textColor="#0F3D2E"
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <!-- ADIM 1 -->
+    <!-- ADIM 1: Lig Adı ve Takım Sayısı -->
     <LinearLayout
         android:id="@+id/layoutStep1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lig Adı"
+            android:textColor="#16201C"
+            android:textSize="12.5sp"
+            android:textStyle="bold" />
+
         <EditText
             android:id="@+id/etLeagueName"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_dialog_card"
-            android:hint="Lig Adı (Örn: Sultanbeyli Ligi)"
+            android:background="@drawable/bg_dialog_input"
+            android:hint="Örn: Süper Halı Saha Ligi"
             android:inputType="textCapWords"
             android:paddingHorizontal="12dp"
-            android:textColor="@color/textDark"
-            android:textColorHint="@color/textSecondary"
+            android:textColor="#16201C"
+            android:textColorHint="#8C9E95"
             android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Takım Sayısı"
+            android:textColor="#16201C"
+            android:textSize="12.5sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etTeamCount"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_dialog_card"
-            android:hint="Takım Sayısı (Örn: 4)"
+            android:layout_height="46dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_dialog_input"
+            android:hint="Kaç takım katılacak? (Örn: 4, 6)"
             android:inputType="number"
             android:paddingHorizontal="12dp"
-            android:textColor="@color/textDark"
-            android:textColorHint="@color/textSecondary"
+            android:textColor="#16201C"
+            android:textColorHint="#8C9E95"
             android:textSize="14sp" />
     </LinearLayout>
 
-    <!-- ADIM 2 -->
+    <!-- ADIM 2: Takım İsimleri Girişi -->
     <ScrollView
         android:id="@+id/layoutStep2"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="220dp"
         android:visibility="gone">
 
         <LinearLayout
@@ -63,5 +82,45 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
+
+    <!-- Ortak Buton Satırı -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <!-- İptal Butonu -->
+        <TextView
+            android:id="@+id/btnIptal"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingHorizontal="18dp"
+            android:text="İptal"
+            android:textColor="#5B6660"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <!-- Devam / Başlat Butonu -->
+        <TextView
+            android:id="@+id/btnDevam"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dialog_btn_primary"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingHorizontal="22dp"
+            android:text="Devam Et"
+            android:textColor="#F5F3EC"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>

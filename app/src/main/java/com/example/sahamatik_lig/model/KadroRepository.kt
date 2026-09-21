@@ -7,13 +7,15 @@ object KadroRepository {
 
     private val db by lazy { FirebaseFirestore.getInstance() }
 
+    private fun safeDoc(name: String): String = name.trim().replace("/", "-")
+
     // ─── TAKIM ────────────────────────────────────────────────────────────────
 
     fun takimOlustur(ligAdi: String, takimAdi: String, onSuccess: () -> Unit = {}, onError: (Exception) -> Unit = {}) {
         val takimRef = db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
 
         val takimData = mapOf(
             "takimAdi" to takimAdi.trim(),
@@ -30,15 +32,15 @@ object KadroRepository {
         onSuccess: () -> Unit = {},
         onError: (Exception) -> Unit = {}
     ) {
-        db.collection("ligler").document(ligAdi.trim())
-            .collection("takimlar").document(takimAdi.trim())
+        db.collection("ligler").document(safeDoc(ligAdi))
+            .collection("takimlar").document(safeDoc(takimAdi))
             .collection("oyuncular").get()
             .addOnSuccessListener { snapshot ->
                 for (doc in snapshot.documents) {
                     doc.reference.delete()
                 }
-                db.collection("ligler").document(ligAdi.trim())
-                    .collection("takimlar").document(takimAdi.trim())
+                db.collection("ligler").document(safeDoc(ligAdi))
+                    .collection("takimlar").document(safeDoc(takimAdi))
                     .delete()
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { e -> onError(e) }
@@ -55,9 +57,9 @@ object KadroRepository {
         onError: (Exception) -> Unit = {}
     ) {
         val takimRef = db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
 
         takimRef.update(guncellenenVeri)
             .addOnSuccessListener { onSuccess() }
@@ -72,9 +74,9 @@ object KadroRepository {
         onError: (Exception) -> Unit = {}
     ) {
         val oyuncularRef = db.collection("ligler")
-            .document(oyuncu.ligAdi.trim())
+            .document(safeDoc(oyuncu.ligAdi))
             .collection("takimlar")
-            .document(oyuncu.takimAdi.trim())
+            .document(safeDoc(oyuncu.takimAdi))
             .collection("oyuncular")
 
         val yeniDoc = oyuncularRef.document()
@@ -94,9 +96,9 @@ object KadroRepository {
         onError: (Exception) -> Unit = {}
     ) {
         val oyuncuRef = db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
             .collection("oyuncular")
             .document(oyuncuId)
 
@@ -113,9 +115,9 @@ object KadroRepository {
         onError: (Exception) -> Unit = {}
     ) {
         val oyuncuRef = db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
             .collection("oyuncular")
             .document(oyuncuId)
 
@@ -131,9 +133,9 @@ object KadroRepository {
         onError: (Exception) -> Unit
     ): ListenerRegistration {
         return db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
             .collection("oyuncular")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -153,9 +155,9 @@ object KadroRepository {
         onResult: (List<Oyuncu>) -> Unit
     ) {
         db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("takimlar")
-            .document(takimAdi.trim())
+            .document(safeDoc(takimAdi))
             .collection("oyuncular")
             .get()
             .addOnSuccessListener { snapshot ->
@@ -179,7 +181,7 @@ object KadroRepository {
             "gruplarMap"        to (lig.gruplarMap ?: emptyMap<String, List<String>>()),
             "olusturulmaTarihi" to lig.olusturulmaTarihi
         )
-        db.collection("ligler").document(lig.name.trim()).set(ligData)
+        db.collection("ligler").document(safeDoc(lig.name)).set(ligData)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onError(e) }
     }
@@ -235,15 +237,15 @@ object KadroRepository {
         onSuccess: () -> Unit = {},
         onError: (Exception) -> Unit = {}
     ) {
-        val trimmedLigAdi = ligAdi.trim()
-        val baseRef = db.collection("ligler").document(trimmedLigAdi)
+        val safeLigAdi = safeDoc(ligAdi)
+        val baseRef = db.collection("ligler").document(safeLigAdi)
 
         baseRef.collection("takimlar").get()
             .addOnSuccessListener { takimlarSnapshot ->
                 val tumTakimlar = takimlarSnapshot.documents
 
                 if (tumTakimlar.isEmpty()) {
-                    ligSilDevam(trimmedLigAdi, baseRef, onSuccess, onError)
+                    ligSilDevam(safeLigAdi, baseRef, onSuccess, onError)
                     return@addOnSuccessListener
                 }
 
@@ -257,7 +259,7 @@ object KadroRepository {
                             takimDoc.reference.delete().addOnSuccessListener {
                                 tamamlananTakim++
                                 if (tamamlananTakim == tumTakimlar.size) {
-                                    ligSilDevam(trimmedLigAdi, baseRef, onSuccess, onError)
+                                    ligSilDevam(safeLigAdi, baseRef, onSuccess, onError)
                                 }
                             }
                         }
@@ -265,7 +267,7 @@ object KadroRepository {
                             takimDoc.reference.delete().addOnSuccessListener {
                                 tamamlananTakim++
                                 if (tamamlananTakim == tumTakimlar.size) {
-                                    ligSilDevam(trimmedLigAdi, baseRef, onSuccess, onError)
+                                    ligSilDevam(safeLigAdi, baseRef, onSuccess, onError)
                                 }
                             }
                         }
@@ -326,7 +328,7 @@ object KadroRepository {
         )
 
         db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("macSonuclari")
             .document("mac_$macId")
             .set(macData)
@@ -344,7 +346,7 @@ object KadroRepository {
         onError: (Exception) -> Unit = {}
     ) {
         db.collection("ligler")
-            .document(ligAdi.trim())
+            .document(safeDoc(ligAdi))
             .collection("macSonuclari")
             .get()
             .addOnSuccessListener { snapshot ->

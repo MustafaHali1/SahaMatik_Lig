@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +14,10 @@ import com.example.sahamatik_lig.databinding.ActivityMainBinding
 import com.example.sahamatik_lig.databinding.BottomSheetLigSecimBinding
 import com.example.sahamatik_lig.databinding.DialogAddLeagueBinding
 import com.example.sahamatik_lig.databinding.DialogGrupTurnuvaEkleBinding
+import com.example.sahamatik_lig.databinding.DialogHizliMacOlusturBinding
 import com.example.sahamatik_lig.model.KadroRepository
 import com.example.sahamatik_lig.model.Lig
+import com.example.sahamatik_lig.model.Oyuncu
 import com.example.sahamatik_lig.databinding.DialogSilmeOnayiBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.ListenerRegistration
@@ -34,20 +37,33 @@ class MainActivity : AppCompatActivity() {
 
         adapter = LigAdapter(ligList,
             onItemClick = { secilenLig ->
-                val intent = Intent(this@MainActivity, LigDetailActivity::class.java).apply {
-                    putExtra("LIG_ADI", secilenLig.name)
-                    putExtra("FORMAT_TIPI", secilenLig.formatTipi)
-                    putStringArrayListExtra("TAKIMLAR", ArrayList(secilenLig.takimlar))
-
-                    if (secilenLig.formatTipi == "GRUP" && secilenLig.gruplarMap != null) {
-                        val gruplarHashMap = HashMap<String, ArrayList<String>>()
-                        for ((grup, takimlar) in secilenLig.gruplarMap) {
-                            gruplarHashMap[grup] = ArrayList(takimlar)
-                        }
-                        putExtra("GRUPLAR_MAP", gruplarHashMap)
+                if (secilenLig.formatTipi == "TEKIL_MAC") {
+                    val evTakim = secilenLig.takimlar.getOrNull(0) ?: "Ev Sahibi"
+                    val depTakim = secilenLig.takimlar.getOrNull(1) ?: "Deplasman"
+                    val intent = Intent(this@MainActivity, MacDetailActivity::class.java).apply {
+                        putExtra("EV_TAKIM", evTakim)
+                        putExtra("DEP_TAKIM", depTakim)
+                        putExtra("LIG_ADI", secilenLig.name)
+                        putExtra("MAC_ID", 1)
+                        putExtra("HAFTA", 1)
                     }
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this@MainActivity, LigDetailActivity::class.java).apply {
+                        putExtra("LIG_ADI", secilenLig.name)
+                        putExtra("FORMAT_TIPI", secilenLig.formatTipi)
+                        putStringArrayListExtra("TAKIMLAR", ArrayList(secilenLig.takimlar))
+
+                        if (secilenLig.formatTipi == "GRUP" && secilenLig.gruplarMap != null) {
+                            val gruplarHashMap = HashMap<String, ArrayList<String>>()
+                            for ((grup, takimlar) in secilenLig.gruplarMap) {
+                                gruplarHashMap[grup] = ArrayList(takimlar)
+                            }
+                            putExtra("GRUPLAR_MAP", gruplarHashMap)
+                        }
+                    }
+                    startActivity(intent)
                 }
-                startActivity(intent)
             },
             onItemLongClick = { secilenLig -> showLigSilDialog(secilenLig) },
             onItemSilClick = { secilenLig -> showLigSilDialog(secilenLig) }
@@ -100,7 +116,172 @@ class MainActivity : AppCompatActivity() {
             showAddGroupTournamentDialog()
         }
 
+        sheetBinding.cardTekilMac.setOnClickListener {
+            dialog.dismiss()
+            showHizliMacDialog()
+        }
+
         dialog.show()
+    }
+
+    private fun showHizliMacDialog() {
+        val dialogBinding = DialogHizliMacOlusturBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        var currentStep = 1
+        var macAdi = ""
+        var takim1Adi = ""
+        var takim2Adi = ""
+        val takim1Oyuncular = mutableListOf<Pair<String, String>>()
+        val takim2Oyuncular = mutableListOf<Pair<String, String>>()
+
+        dialogBinding.btnHizliMacIptal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnHizliMacDevam.setOnClickListener {
+            when (currentStep) {
+                1 -> {
+                    macAdi = dialogBinding.etMacAdi.text.toString().trim().replace("/", "-")
+                    takim1Adi = dialogBinding.etTakim1Adi.text.toString().trim().replace("/", "-")
+                    takim2Adi = dialogBinding.etTakim2Adi.text.toString().trim().replace("/", "-")
+
+                    if (macAdi.isEmpty()) {
+                        Toast.makeText(this, "Lütfen maç adını girin", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    if (takim1Adi.isEmpty() || takim2Adi.isEmpty()) {
+                        Toast.makeText(this, "Lütfen her iki takım adını da girin", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    if (takim1Adi.equals(takim2Adi, ignoreCase = true)) {
+                        Toast.makeText(this, "Takım adları farklı olmalıdır", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    // 2. Adıma Geç (Takım 1 Kadrosu)
+                    currentStep = 2
+                    dialogBinding.layoutMacAdim1.visibility = View.GONE
+                    dialogBinding.layoutMacAdim2.visibility = View.VISIBLE
+                    dialogBinding.tvHizliMacBaslik.text = "🟢 $takim1Adi Kadrosu (2/3)"
+                    dialogBinding.tvTakim1KadroBilgi.text = "$takim1Adi için 7 oyuncu girin:"
+                    dialogBinding.btnHizliMacDevam.text = "2. Takıma Geç"
+                }
+
+                2 -> {
+                    val inputs = listOf(
+                        Pair(dialogBinding.etT1Oyuncu1.text.toString().trim(), "Kaleci"),
+                        Pair(dialogBinding.etT1Oyuncu2.text.toString().trim(), "Defans"),
+                        Pair(dialogBinding.etT1Oyuncu3.text.toString().trim(), "Defans"),
+                        Pair(dialogBinding.etT1Oyuncu4.text.toString().trim(), "Orta Saha"),
+                        Pair(dialogBinding.etT1Oyuncu5.text.toString().trim(), "Orta Saha"),
+                        Pair(dialogBinding.etT1Oyuncu6.text.toString().trim(), "Forvet"),
+                        Pair(dialogBinding.etT1Oyuncu7.text.toString().trim(), "Forvet")
+                    )
+
+                    takim1Oyuncular.clear()
+                    inputs.forEachIndexed { index, (isim, mevki) ->
+                        val finalIsim = if (isim.isNotEmpty()) isim else "$mevki ${index + 1}"
+                        takim1Oyuncular.add(Pair(finalIsim, mevki))
+                    }
+
+                    // 3. Adıma Geç (Takım 2 Kadrosu)
+                    currentStep = 3
+                    dialogBinding.layoutMacAdim2.visibility = View.GONE
+                    dialogBinding.layoutMacAdim3.visibility = View.VISIBLE
+                    dialogBinding.tvHizliMacBaslik.text = "⚪ $takim2Adi Kadrosu (3/3)"
+                    dialogBinding.tvTakim2KadroBilgi.text = "$takim2Adi için 7 oyuncu girin:"
+                    dialogBinding.btnHizliMacDevam.text = "Maçı Başlat ⚽"
+                }
+
+                3 -> {
+                    val inputs = listOf(
+                        Pair(dialogBinding.etT2Oyuncu1.text.toString().trim(), "Kaleci"),
+                        Pair(dialogBinding.etT2Oyuncu2.text.toString().trim(), "Defans"),
+                        Pair(dialogBinding.etT2Oyuncu3.text.toString().trim(), "Defans"),
+                        Pair(dialogBinding.etT2Oyuncu4.text.toString().trim(), "Orta Saha"),
+                        Pair(dialogBinding.etT2Oyuncu5.text.toString().trim(), "Orta Saha"),
+                        Pair(dialogBinding.etT2Oyuncu6.text.toString().trim(), "Forvet"),
+                        Pair(dialogBinding.etT2Oyuncu7.text.toString().trim(), "Forvet")
+                    )
+
+                    takim2Oyuncular.clear()
+                    inputs.forEachIndexed { index, (isim, mevki) ->
+                        val finalIsim = if (isim.isNotEmpty()) isim else "$mevki ${index + 1}"
+                        takim2Oyuncular.add(Pair(finalIsim, mevki))
+                    }
+
+                    dialog.dismiss()
+                    hizliMacOlusturVeBaslat(macAdi, takim1Adi, takim2Adi, takim1Oyuncular, takim2Oyuncular)
+                }
+            }
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun hizliMacOlusturVeBaslat(
+        macAdi: String,
+        takim1: String,
+        takim2: String,
+        t1Oyuncular: List<Pair<String, String>>,
+        t2Oyuncular: List<Pair<String, String>>
+    ) {
+        Toast.makeText(this, "⚽ Maç ve kadrolar hazırlanıyor...", Toast.LENGTH_SHORT).show()
+
+        val tekilLig = Lig(
+            name = macAdi,
+            takimsayisi = 2,
+            takimlar = listOf(takim1, takim2),
+            formatTipi = "TEKIL_MAC",
+            olusturulmaTarihi = System.currentTimeMillis()
+        )
+
+        KadroRepository.ligKaydet(
+            lig = tekilLig,
+            onSuccess = {
+                KadroRepository.takimOlustur(macAdi, takim1, onSuccess = {
+                    t1Oyuncular.forEach { (isim, mevki) ->
+                        KadroRepository.oyuncuEkle(
+                            Oyuncu(isim = isim, mevki = mevki, takimAdi = takim1, ligAdi = macAdi)
+                        )
+                    }
+
+                    KadroRepository.takimOlustur(macAdi, takim2, onSuccess = {
+                        var t2Eklenen = 0
+                        val toplamT2 = t2Oyuncular.size
+                        t2Oyuncular.forEach { (isim, mevki) ->
+                            KadroRepository.oyuncuEkle(
+                                Oyuncu(isim = isim, mevki = mevki, takimAdi = takim2, ligAdi = macAdi),
+                                onSuccess = {
+                                    t2Eklenen++
+                                    if (t2Eklenen == toplamT2) {
+                                        val intent = Intent(this@MainActivity, MacDetailActivity::class.java).apply {
+                                            putExtra("EV_TAKIM", takim1)
+                                            putExtra("DEP_TAKIM", takim2)
+                                            putExtra("LIG_ADI", macAdi)
+                                            putExtra("MAC_ID", 1)
+                                            putExtra("HAFTA", 1)
+                                        }
+                                        startActivity(intent)
+                                    }
+                                }
+                            )
+                        }
+                    }, onError = { e ->
+                        Toast.makeText(this, "2. Takım eklenemedi: ${e.message}", Toast.LENGTH_SHORT).show()
+                    })
+                }, onError = { e ->
+                    Toast.makeText(this, "1. Takım eklenemedi: ${e.message}", Toast.LENGTH_SHORT).show()
+                })
+            },
+            onError = { e ->
+                Toast.makeText(this, "Maç oluşturulamadı: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     private fun showAddGroupTournamentDialog() {
@@ -110,9 +291,7 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogBinding.root)
             .create()
 
-        dialog.show()
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        dialogBinding.btnOlustur.setOnClickListener {
             val turnuvaAdi = dialogBinding.etTurnuvaAdi.text.toString().trim()
             val grupSayisiStr = dialogBinding.etGrupSayisi.text.toString().trim()
             val takimlarGirdi = dialogBinding.etTakimlar.text.toString().trim()
@@ -171,9 +350,12 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+        dialogBinding.btnIptal.setOnClickListener {
             dialog.dismiss()
         }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     private fun showAddLeagueDialog() {
@@ -183,15 +365,11 @@ class MainActivity : AppCompatActivity() {
         var currentStep = 1
         var leagueName = ""
 
-        val builder = AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setView(dialogBinding.root)
-            .setPositiveButton("Devam Et", null)
-            .setNegativeButton("İptal") { dialog, _ -> dialog.dismiss() }
+            .create()
 
-        val alertDialog = builder.create()
-        alertDialog.show()
-
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        dialogBinding.btnDevam.setOnClickListener {
             if (currentStep == 1) {
                 leagueName = dialogBinding.etLeagueName.text.toString().trim()
                 val teamCountStr = dialogBinding.etTeamCount.text.toString().trim()
@@ -208,9 +386,21 @@ class MainActivity : AppCompatActivity() {
                     teamEditTextList.clear()
 
                     for (i in 1..teamCount) {
-                        val editText = EditText(this)
-                        editText.hint = "$i. Takım Adı"
-                        editText.setSingleLine()
+                        val editText = EditText(this).apply {
+                            hint = "$i. Takım Adı"
+                            setSingleLine()
+                            setBackgroundResource(com.example.sahamatik_lig.R.drawable.bg_dialog_input)
+                            setPadding(32, 24, 32, 24)
+                            val lp = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            lp.bottomMargin = 16
+                            layoutParams = lp
+                            setTextColor(getColor(com.example.sahamatik_lig.R.color.textDark))
+                            setHintTextColor(getColor(com.example.sahamatik_lig.R.color.textSecondary))
+                            textSize = 14f
+                        }
 
                         dialogBinding.containerTeams.addView(editText)
                         teamEditTextList.add(editText)
@@ -218,9 +408,8 @@ class MainActivity : AppCompatActivity() {
 
                     dialogBinding.layoutStep1.visibility = View.GONE
                     dialogBinding.layoutStep2.visibility = View.VISIBLE
-                    dialogBinding.tvDialogTitle.text = "Takım isimlerini Gir (2/2)"
-
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).text = "Kura Cek & Ligi Baslat"
+                    dialogBinding.tvDialogTitle.text = "⚽ Takım İsimlerini Gir (2/2)"
+                    dialogBinding.btnDevam.text = "Kura Çek & Başlat"
                     currentStep = 2
 
                 } else {
@@ -249,14 +438,14 @@ class MainActivity : AppCompatActivity() {
                         formatTipi = "KLASIK"
                     )
 
-                    // Firestore'a kaydet (Uygulama kapansa da kalıcı olacak)
+                    // Firestore'a kaydet
                     KadroRepository.ligKaydet(yeniLig)
                     for (takimAdi in teamNames) {
                         KadroRepository.takimOlustur(leagueName, takimAdi)
                     }
 
                     Toast.makeText(this, "$leagueName başarıyla kuruldu!", Toast.LENGTH_SHORT).show()
-                    alertDialog.dismiss()
+                    dialog.dismiss()
 
                     val intent = Intent(this@MainActivity, LigDetailActivity::class.java).apply {
                         putExtra("LIG_ADI", leagueName)
@@ -270,6 +459,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        dialogBinding.btnIptal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     // Ligi silme dialogu - Binding ile

@@ -1,5 +1,6 @@
 package com.example.sahamatik_lig.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -56,6 +57,15 @@ class IstatistiklerFragment : Fragment() {
                     satir.ivTakimLogo.setImageResource(com.example.sahamatik_lig.R.drawable.bg_harf_avatar)
                 }
 
+                // Takım detayına git
+                satir.root.setOnClickListener {
+                    val intent = Intent(requireContext(), TakimDetailActivity::class.java).apply {
+                        putExtra("TAKIM_ADI", takim.takimAdi)
+                        putExtra("LIG_ADI", ligAdi)
+                    }
+                    startActivity(intent)
+                }
+
                 binding.containerEnCokGolAtan.addView(satir.root)
             }
 
@@ -79,6 +89,15 @@ class IstatistiklerFragment : Fragment() {
                     satir.ivTakimLogo.setImageURI(logoUri)
                 } else {
                     satir.ivTakimLogo.setImageResource(com.example.sahamatik_lig.R.drawable.bg_harf_avatar)
+                }
+
+                // Takım detayına git
+                satir.root.setOnClickListener {
+                    val intent = Intent(requireContext(), TakimDetailActivity::class.java).apply {
+                        putExtra("TAKIM_ADI", takim.takimAdi)
+                        putExtra("LIG_ADI", ligAdi)
+                    }
+                    startActivity(intent)
                 }
 
                 binding.containerEnCokGolYiyen.addView(satir.root)

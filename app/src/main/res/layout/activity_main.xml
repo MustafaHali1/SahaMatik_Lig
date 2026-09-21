@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Katıldığın ligler"
+                android:text="Son Katıldığım Maç ve Ligler"
                 android:textColor="#16201C"
                 android:textSize="13sp"
                 android:textStyle="bold" />

@@ -27,7 +27,14 @@ class LigAdapter(
     class LigViewHolder(private val binding: ItemLigBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(lig: Lig, onItemClick: (Lig) -> Unit, onItemLongClick: (Lig) -> Unit, onItemSilClick: (Lig) -> Unit) {
             binding.tvLigAdi.text = lig.name
-            binding.tvLigDetay.text = "${lig.takimsayisi} Takim - ${lig.formatTipi}"
+            if (lig.formatTipi == "TEKIL_MAC") {
+                val ev = lig.takimlar.getOrNull(0) ?: "Ev Sahibi"
+                val dep = lig.takimlar.getOrNull(1) ?: "Deplasman"
+                binding.tvLigDetay.text = "⚽ Tekil Maç • $ev vs $dep"
+            } else {
+                val formatAdi = if (lig.formatTipi == "GRUP") "Grup Turnuvası" else "Klasik Lig"
+                binding.tvLigDetay.text = "${lig.takimsayisi} Takım • $formatAdi"
+            }
 
             // Kisa tiklama - lige git
             binding.root.setOnClickListener { onItemClick(lig) }

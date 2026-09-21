@@ -5,26 +5,29 @@
     android:background="@drawable/bg_dialog_card"
     android:elevation="8dp"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="22dp">
 
-    <ImageView
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+    <!-- Uyarı İkonu -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:src="@android:drawable/ic_dialog_alert"
-        android:tint="#D32F2F" />
+        android:layout_marginBottom="12dp"
+        android:text="⚠️"
+        android:textSize="36sp" />
 
+    <!-- Başlık -->
     <TextView
         android:id="@+id/tvSilmeBaslik"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Silme Islemi"
-        android:textColor="#1A1A1A"
+        android:text="Silme İşlemi"
+        android:textColor="#0F3D2E"
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Açıklama -->
     <TextView
         android:id="@+id/tvSilmeAciklama"
         android:layout_width="match_parent"
@@ -32,36 +35,48 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:lineSpacingExtra="3dp"
-        android:text="Bu islem geri alinamaz!"
-        android:textColor="#666666"
+        android:text="Bu işlem geri alınamaz!"
+        android:textColor="#5B6660"
         android:textSize="14sp" />
 
-    <View
+    <!-- Buton Satırı -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="#E0E0E0" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="end"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/btnSilOnay"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/selectableItemBackground"
-        android:gravity="center"
-        android:text="Evet, Sil"
-        android:textColor="@color/deleteRed"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        <!-- İptal Butonu -->
+        <TextView
+            android:id="@+id/btnSilIptal"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingHorizontal="18dp"
+            android:text="Vazgeç"
+            android:textColor="#5B6660"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/btnSilIptal"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="?attr/selectableItemBackground"
-        android:gravity="center"
-        android:text="Iptal"
-        android:textColor="#555555"
-        android:textSize="15sp" />
+        <!-- Sil Butonu -->
+        <TextView
+            android:id="@+id/btnSilOnay"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_dialog_btn_danger"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingHorizontal="22dp"
+            android:text="Evet, Sil"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>

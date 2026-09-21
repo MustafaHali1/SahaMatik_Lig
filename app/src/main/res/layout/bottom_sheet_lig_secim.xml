@@ -73,6 +73,7 @@
         android:id="@+id/cardGrupTurnuva"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/bg_format_secim_kart"
         android:clickable="true"
         android:focusable="true"
@@ -106,6 +107,49 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Takımlar gruplara ayrılır (A, B Grubu). İlk sıradakiler elemelere geçer."
+                android:textColor="#5B6660"
+                android:textSize="12.5sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Tekil Maç Seçeneği (ID: cardTekilMac) -->
+    <LinearLayout
+        android:id="@+id/cardTekilMac"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_format_secim_kart"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚽"
+            android:textSize="26sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tekil Maç (Halı Saha)"
+                android:textColor="#16201C"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Lig olmadan iki takım kur, kadroları gir ve hemen maça başla."
                 android:textColor="#5B6660"
                 android:textSize="12.5sp" />
         </LinearLayout>
