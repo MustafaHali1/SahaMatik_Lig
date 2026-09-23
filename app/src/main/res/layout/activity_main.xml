@@ -11,34 +11,75 @@
         android:orientation="vertical">
 
         <!-- Üst Koyu Yeşil Başlık Barı -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#0F3D2E"
-            android:orientation="vertical"
-            android:paddingHorizontal="18dp"
-            android:paddingTop="26dp"
-            android:paddingBottom="22dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sahamatik"
-                android:textColor="#C7A233"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Liglerim"
-                android:textColor="#F5F3EC"
-                android:textSize="26sp"
-                android:textStyle="bold" />
-        </LinearLayout>
 
         <!-- Katıldığın Ligler Bölüm Başlığı -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="124dp"
+            android:background="#0F3D2E"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="36dp"
+            android:paddingBottom="22dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sahamatik"
+                    android:textColor="#C7A233"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Liglerim"
+                    android:textColor="#F5F3EC"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Kullanıcı Profil Butonu -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardUserProfile"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="#164B39"
+                app:cardCornerRadius="22dp"
+                app:cardElevation="2dp">
+
+                <ImageView
+                    android:id="@+id/ivHeaderUserFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvHeaderUserHarf"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="👤"
+                    android:textColor="#C7A233"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

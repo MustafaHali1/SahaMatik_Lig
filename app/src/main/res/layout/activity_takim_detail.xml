@@ -208,19 +208,37 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <!-- + Oyuncu Ekle Butonu -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnOyuncuEkle"
+            <!-- Butonlar: Oyuncu Ekle ve Link Paylaş -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="46dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:layout_marginBottom="24dp"
-                android:background="@drawable/bg_btn_oyuncu_ekle"
-                android:text="+ Oyuncu ekle"
-                android:textAllCaps="false"
-                android:textColor="#1E7A4D"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnOyuncuEkle"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_oyuncu_ekle"
+                    android:text="🔍 Kadroya Oyuncu Ara ve Ekle"
+                    android:textAllCaps="false"
+                    android:textColor="#1E7A4D"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnTakimDavetLinki"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_btn_oyuncu_ekle"
+                    android:text="🔗 WhatsApp / Davet Linki Paylaş"
+                    android:textAllCaps="false"
+                    android:textColor="#C7A233"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

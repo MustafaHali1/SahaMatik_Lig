@@ -60,4 +60,7 @@ dependencies {
 
     // İsteğe bağlı Analytics
     implementation("com.google.firebase:firebase-analytics")
+
+    // Google ML Kit Face Detection (Yüz Fotoğrafı Doğrulama)
+    implementation("com.google.mlkit:face-detection:16.1.7")
 }

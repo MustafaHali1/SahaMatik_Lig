@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="10dp">
+
+    <!-- Avatar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        app:cardBackgroundColor="#0F3D2E"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="0dp">
+
+        <TextView
+            android:id="@+id/tvAramaHarf"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="M"
+            android:textColor="#C7A233"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Bilgi Alanı -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Username -->
+        <TextView
+            android:id="@+id/tvAramaUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@mustafa_10"
+            android:textColor="#C7A233"
+            android:textSize="14.5sp"
+            android:textStyle="bold" />
+
+        <!-- Ad Soyad • Mevki • Stats -->
+        <TextView
+            android:id="@+id/tvAramaDetay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Mustafa Yılmaz • ⚽ Forvet • 14 Maç"
+            android:textColor="#5B6660"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Ekle Rozeti / Butonu -->
+    <TextView
+        android:id="@+id/btnAramaEkle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_format_secim_kart"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:text="+ Ekle"
+        android:textColor="#0F3D2E"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

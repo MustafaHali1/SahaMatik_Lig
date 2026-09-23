@@ -1,46 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="6dp"
+    android:padding="4dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless">
 
     <!-- Forma/Avatar dairesi -->
     <FrameLayout
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/tvYedekNo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+        <!-- Dış Renkli Takım Çerçevesi (Border) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardYedekBorder"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:layout_gravity="center"
-            android:background="@drawable/bg_harf_avatar"
-            android:gravity="center"
-            android:text="12"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            app:cardBackgroundColor="#2E7D4F"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="2dp">
 
-        <!-- Rozetler (varsa) -->
+            <!-- İç Avatar -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardInnerYedek"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="#1F2A24"
+                app:cardCornerRadius="19dp"
+                app:cardElevation="0dp">
+
+                <!-- Yüz Fotoğrafı (Varsa) -->
+                <ImageView
+                    android:id="@+id/ivYedekFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <!-- Forma No -->
+                <TextView
+                    android:id="@+id/tvYedekNo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="12"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gol Rozeti (Varsa sağ üstte) -->
         <TextView
             android:id="@+id/tvYedekRozetGol"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="16dp"
+            android:minHeight="16dp"
+            android:paddingHorizontal="3dp"
+            android:paddingVertical="1dp"
             android:layout_gravity="top|end"
+            android:layout_marginEnd="-4dp"
+            android:layout_marginTop="-2dp"
             android:background="@drawable/bg_forma_balon"
             android:gravity="center"
             android:text="⚽"
             android:textSize="9sp"
+            android:elevation="4dp"
             android:visibility="gone" />
     </FrameLayout>
 
-    <!-- Yedek Oyuncu İsmi -->
+    <!-- Yedek Oyuncu İsmi (Örn: "12. Batuhan") -->
     <TextView
         android:id="@+id/tvYedekIsim"
         android:layout_width="wrap_content"
@@ -49,8 +86,8 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:maxWidth="70dp"
-        android:text="Oyuncu"
+        android:maxWidth="75dp"
+        android:text="12. Oyuncu"
         android:textColor="#F5F3EC"
         android:textSize="11sp"
         android:textStyle="bold" />

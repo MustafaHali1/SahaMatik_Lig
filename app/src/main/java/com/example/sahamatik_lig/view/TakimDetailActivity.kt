@@ -8,9 +8,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sahamatik_lig.adapter.OyuncuAramaAdapter
 import com.example.sahamatik_lig.databinding.ActivityTakimDetailBinding
-import com.example.sahamatik_lig.databinding.DialogOyuncuEkleBinding
+import com.example.sahamatik_lig.databinding.DialogOyuncuAraSecBinding
 import com.example.sahamatik_lig.databinding.DialogSilmeOnayiBinding
 import com.example.sahamatik_lig.databinding.ItemOyuncuRosterBinding
 import com.example.sahamatik_lig.model.KadroRepository
@@ -27,6 +30,7 @@ class TakimDetailActivity : AppCompatActivity() {
     private var ligAdi: String = ""
     private var firestoreListener: ListenerRegistration? = null
     private lateinit var imagePicker: ImagePickerHelper
+    private var mevcutOyuncular: List<Oyuncu> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +59,38 @@ class TakimDetailActivity : AppCompatActivity() {
 
         canliKadroTakibiBaslat()
 
-        binding.btnOyuncuEkle.setOnClickListener { showOyuncuEkleDialog() }
+        binding.btnOyuncuEkle.setOnClickListener {
+            val haricTutulanlar = mevcutOyuncular.map {
+                it.username.removePrefix("@").lowercase().trim()
+            }.toSet()
+            showOyuncuAraSecDialog(haricTutulanUsernameler = haricTutulanlar) { secilenOyuncu ->
+                KadroRepository.takimaOyuncuEkleKontrollu(
+                    ligAdi = ligAdi,
+                    takimAdi = takimAdi,
+                    oyuncu = secilenOyuncu,
+                    maxKontenjan = 10,
+                    onSuccess = {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(this, "${secilenOyuncu.isim} (${secilenOyuncu.username}) kadroya eklendi! ⚽", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    onLimitDolu = {
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(this, "⚠️ $takimAdi takımı 10 kişilik maksimum kontenjana ulaştı!", Toast.LENGTH_LONG).show()
+                        }
+                    },
+                    onError = { e ->
+                        if (!isFinishing && !isDestroyed) {
+                            Toast.makeText(this, e.message ?: "Oyuncu eklenemedi", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
+            }
+        }
+
+        binding.btnTakimDavetLinki.setOnClickListener {
+            KadroRepository.davetLinkiPaylas(this, ligAdi, takimAdi)
+        }
     }
 
     private fun logoFirestoreKaydet(uri: Uri) {
@@ -78,7 +113,10 @@ class TakimDetailActivity : AppCompatActivity() {
         firestoreListener = KadroRepository.takimOyunculariniCanliDinle(
             ligAdi = ligAdi,
             takimAdi = takimAdi,
-            onUpdate = { oyuncular -> kadroListesiniCiz(oyuncular) },
+            onUpdate = { oyuncular ->
+                mevcutOyuncular = oyuncular
+                kadroListesiniCiz(oyuncular)
+            },
             onError = { e -> Toast.makeText(this, "Hata: ${e.message}", Toast.LENGTH_SHORT).show() }
         )
     }
@@ -102,9 +140,17 @@ class TakimDetailActivity : AppCompatActivity() {
             itemBinding.tvOyuncuIsim.text = oyuncu.isim
             itemBinding.tvOyuncuHarf.text = oyuncu.isim.firstOrNull()?.uppercase() ?: "?"
 
-            // Kisa tiklama - bilgi
+            // Kisa tiklama - OyuncuDetailActivity'ye git
             itemBinding.root.setOnClickListener {
-                showOyuncuBilgisiDialog(oyuncu)
+                val intent = Intent(this, OyuncuDetailActivity::class.java).apply {
+                    putExtra("OYUNCU", oyuncu)
+                    putExtra("USERNAME", oyuncu.username)
+                    putExtra("ISIM", oyuncu.isim)
+                    putExtra("MEVKI", oyuncu.mevki)
+                    putExtra("TAKIM_ADI", takimAdi)
+                    putExtra("LIG_ADI", ligAdi)
+                }
+                startActivity(intent)
             }
 
             // Sil butonu tiklama
@@ -175,63 +221,59 @@ class TakimDetailActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    /**
-     * Oyuncu ekleme dialog'u.
-     * Custom layout (dialog_oyuncu_ekle.xml) kullanır.
-     * Kaydet / İptal butonları layout içindedir — getButton() ile DEĞİL,
-     * binding üzerinden wiring yapılır.
-     */
-    private fun showOyuncuEkleDialog() {
-        val dialogBinding = DialogOyuncuEkleBinding.inflate(layoutInflater)
+    // ─── INSTAGRAM TARZI OYUNCU ARA VE SEÇ DİYALOĞU ───────────────────────────
 
-        // Mevki spinner'ını doldur
-        val mevkiler = arrayOf("Kaleci", "Defans", "Orta Saha", "Forvet")
-        dialogBinding.spMevki.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item, mevkiler
-        )
-
-        // Dialog oluştur — setPositiveButton kullanmıyoruz,
-        // butonlar zaten custom layout içinde (dialog_oyuncu_ekle.xml)
+    private fun showOyuncuAraSecDialog(
+        haricTutulanUsernameler: Set<String> = emptySet(),
+        onSecildi: (Oyuncu) -> Unit
+    ) {
+        val dialogBinding = DialogOyuncuAraSecBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogBinding.root)
             .create()
 
-        // Kaydet butonu
-        dialogBinding.btnKaydet.setOnClickListener {
-            val isim  = dialogBinding.etOyuncuIsmi.text.toString().trim()
-            val mevki = dialogBinding.spMevki.selectedItem.toString()
-
-            // İsim boş bırakılamaz
-            if (isim.isEmpty()) {
-                Toast.makeText(this, "İsim boş olamaz!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Yeni oyuncu oluştur ve Firestore'a kaydet
-            val yeniOyuncu = Oyuncu(
-                isim     = isim,
-                mevki    = mevki,
-                takimAdi = takimAdi,
-                ligAdi   = ligAdi
-            )
-            KadroRepository.oyuncuEkle(
-                oyuncu    = yeniOyuncu,
-                onSuccess = {
-                    if (!isFinishing && !isDestroyed) {
-                        Toast.makeText(this, "$isim eklendi!", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                onError = { e ->
-                    if (!isFinishing && !isDestroyed) {
-                        Toast.makeText(this, "Kayıt başarısız: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            )
+        val aramaAdapter = OyuncuAramaAdapter(emptyList()) { secilenOyuncu ->
+            onSecildi(secilenOyuncu)
             dialog.dismiss()
         }
+        dialogBinding.rvAramaSonuclari.layoutManager = LinearLayoutManager(this)
+        dialogBinding.rvAramaSonuclari.adapter = aramaAdapter
 
-        // İptal butonu
-        dialogBinding.btnIptal.setOnClickListener {
+        val listeyiFiltreleVeGoster = { liste: List<Oyuncu> ->
+            val temiz = if (haricTutulanUsernameler.isNotEmpty()) {
+                liste.filter {
+                    val clean = it.username.removePrefix("@").lowercase().trim()
+                    !haricTutulanUsernameler.contains(clean)
+                }
+            } else liste
+            runOnUiThread {
+                aramaAdapter.listeyiGuncelle(temiz)
+                dialogBinding.tvAramaBosSonuc.visibility = if (temiz.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+
+        // İlk açılışta tüm hazır profilleri listele
+        KadroRepository.oyuncuAra("") { liste ->
+            listeyiFiltreleVeGoster(liste)
+        }
+
+        dialogBinding.etOyuncuAramaInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                val q = s?.toString()?.trim() ?: ""
+                dialogBinding.btnAramaTemizle.visibility = if (q.isNotEmpty()) View.VISIBLE else View.GONE
+                KadroRepository.oyuncuAra(q) { filtreli ->
+                    listeyiFiltreleVeGoster(filtreli)
+                }
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        dialogBinding.btnAramaTemizle.setOnClickListener {
+            dialogBinding.etOyuncuAramaInput.setText("")
+        }
+
+        dialogBinding.btnAramaKapat.setOnClickListener {
             dialog.dismiss()
         }
 

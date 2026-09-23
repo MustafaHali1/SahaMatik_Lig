@@ -9,5 +9,6 @@ data class Lig(
     val takimlar: List<String> = emptyList(),
     val formatTipi: String = "KLASIK",
     val gruplarMap: Map<String, List<String>>? = null,
-    val olusturulmaTarihi: Long = System.currentTimeMillis()
+    val olusturulmaTarihi: Long = System.currentTimeMillis(),
+    val olusturanId: String = "" // Kaptanın / kurucunun cihaz ID'si
 ) : Serializable

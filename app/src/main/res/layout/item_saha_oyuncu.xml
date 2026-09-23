@@ -1,40 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="4dp"
+    android:padding="3dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless">
 
     <!-- Forma/Avatar dairesi ve Rozetler -->
     <FrameLayout
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center">
 
-        <!-- Dairesel Oyuncu Balonu -->
-        <TextView
-            android:id="@+id/tvFormaNo"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+        <!-- Dış Renkli Takım Çerçevesi (Border) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardAvatarBorder"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             android:layout_gravity="center"
-            android:background="@drawable/bg_harf_avatar"
-            android:gravity="center"
-            android:text="10"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:elevation="4dp" />
+            app:cardBackgroundColor="#2E7D4F"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="3dp">
 
-        <!-- Gol Rozeti (Varsa sağ üstte) -->
+            <!-- İç Avatar (Yüz Fotoğrafı veya Numara) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardInnerAvatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="#1F2A24"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <!-- Yüz Fotoğrafı (Seçilmişse) -->
+                <ImageView
+                    android:id="@+id/ivOyuncuFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <!-- Forma No / Baş Harf (Fotoğraf Yoksa) -->
+                <TextView
+                    android:id="@+id/tvFormaNo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="10"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gol Rozeti (Varsa sağ üstte, gol sayısına göre ⚽⚽⚽ uzar) -->
         <TextView
             android:id="@+id/tvRozetGol"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="18dp"
+            android:minHeight="18dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="1dp"
             android:layout_gravity="top|end"
+            android:layout_marginEnd="-4dp"
+            android:layout_marginTop="-3dp"
             android:background="@drawable/bg_forma_balon"
             android:gravity="center"
             android:text="⚽"
@@ -48,6 +82,8 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_gravity="top|start"
+            android:layout_marginStart="-4dp"
+            android:layout_marginTop="-2dp"
             android:gravity="center"
             android:text="🟨"
             android:textSize="11sp"
@@ -55,7 +91,7 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <!-- Oyuncu Adı (Sofascore Tarzı gölgeli şık yazı) -->
+    <!-- Oyuncu No ve İlk Adı (Örn: "10. Yiğit") -->
     <TextView
         android:id="@+id/tvOyuncuAdi"
         android:layout_width="wrap_content"
@@ -64,8 +100,8 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:maxWidth="75dp"
-        android:text="Oyuncu"
+        android:maxWidth="80dp"
+        android:text="10. Oyuncu"
         android:textColor="#FFFFFF"
         android:textSize="11sp"
         android:textStyle="bold"

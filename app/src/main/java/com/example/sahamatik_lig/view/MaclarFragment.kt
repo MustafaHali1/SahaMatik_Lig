@@ -94,6 +94,7 @@ class MaclarFragment : Fragment() {
                     putExtra("EV_TAKIM", secilenMac.takim1)
                     putExtra("DEP_TAKIM", secilenMac.takim2)
                     putExtra("LIG_ADI", ligAdi)
+                    putExtra("FORMAT_TIPI", formatTipi)
                     putExtra("MAC_ID", secilenMac.id)
                     putExtra("HAFTA", secilenMac.hafta)
                     if (secilenMac.isOynandi) {

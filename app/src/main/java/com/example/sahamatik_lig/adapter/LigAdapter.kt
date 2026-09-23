@@ -8,6 +8,7 @@ import com.example.sahamatik_lig.model.Lig
 
 class LigAdapter(
     private val ligList: List<Lig>,
+    private val mevcutCihazId: String,
     private val onItemClick: (Lig) -> Unit,
     private val onItemLongClick: (Lig) -> Unit,
     private val onItemSilClick: (Lig) -> Unit
@@ -19,13 +20,19 @@ class LigAdapter(
     }
 
     override fun onBindViewHolder(holder: LigViewHolder, position: Int) {
-        holder.bind(ligList[position], onItemClick, onItemLongClick, onItemSilClick)
+        holder.bind(ligList[position], mevcutCihazId, onItemClick, onItemLongClick, onItemSilClick)
     }
 
     override fun getItemCount(): Int = ligList.size
 
     class LigViewHolder(private val binding: ItemLigBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(lig: Lig, onItemClick: (Lig) -> Unit, onItemLongClick: (Lig) -> Unit, onItemSilClick: (Lig) -> Unit) {
+        fun bind(
+            lig: Lig,
+            mevcutCihazId: String,
+            onItemClick: (Lig) -> Unit,
+            onItemLongClick: (Lig) -> Unit,
+            onItemSilClick: (Lig) -> Unit
+        ) {
             binding.tvLigAdi.text = lig.name
             if (lig.formatTipi == "TEKIL_MAC") {
                 val ev = lig.takimlar.getOrNull(0) ?: "Ev Sahibi"
@@ -34,6 +41,18 @@ class LigAdapter(
             } else {
                 val formatAdi = if (lig.formatTipi == "GRUP") "Grup Turnuvası" else "Klasik Lig"
                 binding.tvLigDetay.text = "${lig.takimsayisi} Takım • $formatAdi"
+            }
+
+            // Kurucu kontrolü: Kuran kaptan mı yoksa davetli oyuncu mu?
+            val isKurucu = lig.olusturanId.isEmpty() || lig.olusturanId == mevcutCihazId
+            if (isKurucu) {
+                binding.ivSil.setImageResource(android.R.drawable.ic_menu_delete)
+                binding.ivSil.imageTintList = android.content.res.ColorStateList.valueOf(0xFFC0392B.toInt())
+                binding.ivSil.contentDescription = "Ligi Sil (Kurucu)"
+            } else {
+                binding.ivSil.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                binding.ivSil.imageTintList = android.content.res.ColorStateList.valueOf(0xFFE67E22.toInt())
+                binding.ivSil.contentDescription = "Kadrodan Ayrıl"
             }
 
             // Kisa tiklama - lige git

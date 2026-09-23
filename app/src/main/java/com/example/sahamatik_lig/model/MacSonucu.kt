@@ -12,5 +12,6 @@ data class MacSonucu(
     val skor2: Int = 0,
     val hafta: Int = 0,
     val isOynandi: Boolean = false,
-    val olaylar: List<Map<String, Any>> = emptyList()
+    val olaylar: List<Map<String, Any>> = emptyList(),
+    val oyuncuIstatistikleri: Map<String, Map<String, Long>> = emptyMap()
 )
