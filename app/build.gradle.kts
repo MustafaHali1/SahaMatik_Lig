@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -49,4 +50,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // Firebase BoM (Versiyon uyumunu otomatik yönetir)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+
+    // Firestore (Bulut Veritabanı)
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // İsteğe bağlı Analytics
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Google ML Kit Face Detection (Yüz Fotoğrafı Doğrulama)
+    implementation("com.google.mlkit:face-detection:16.1.7")
 }

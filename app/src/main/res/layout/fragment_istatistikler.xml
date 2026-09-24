@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F3EC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="30dp">
+
+        <!-- 1. EN ÇOK GOL ATAN BAŞLIĞI -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="14dp"
+                android:background="#C7A233" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="En çok gol atan"
+                android:textColor="#16201C"
+                android:textSize="13.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- En Çok Gol Atan Takımlar Kartı -->
+        <LinearLayout
+            android:id="@+id/containerEnCokGolAtan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_oyuncu_kart"
+            android:orientation="vertical"
+            android:showDividers="middle"
+            android:divider="?android:attr/listDivider" />
+
+        <!-- 2. EN ÇOK GOL YİYEN BAŞLIĞI -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="14dp"
+                android:background="#C7A233" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="En çok gol yiyen"
+                android:textColor="#16201C"
+                android:textSize="13.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- En Çok Gol Yiyen Takımlar Kartı -->
+        <LinearLayout
+            android:id="@+id/containerEnCokGolYiyen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_oyuncu_kart"
+            android:orientation="vertical"
+            android:showDividers="middle"
+            android:divider="?android:attr/listDivider" />
+
+    </LinearLayout>
+</ScrollView>

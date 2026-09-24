@@ -1,78 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="3dp">
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_oyuncu_kart"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="14dp">
 
+    <!-- Kotlin kodunun çökmesini engelleyen gizli alan -->
+    <TextView
+        android:id="@+id/tvHafta"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <!-- Ev Sahibi -->
     <LinearLayout
-        android:layout_width="381dp"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical|start"
+        android:orientation="horizontal">
 
-        <!-- Hafta Bilgisi -->
+        <androidx.cardview.widget.CardView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#EAE7DD">
+
+            <ImageView
+                android:id="@+id/ivEvLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg_harf_avatar" />
+        </androidx.cardview.widget.CardView>
+
         <TextView
-            android:id="@+id/tvHafta"
+            android:id="@+id/tvTakim1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. Hafta"
-            android:textColor="#757575"
-            android:textSize="12sp"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Gedik FC"
+            android:textColor="#16201C"
+            android:textSize="13.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- VS Kutusu / Skor -->
+    <TextView
+        android:id="@+id/tvMacSkor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/bg_vs_kutusu"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:text="VS"
+        android:textColor="#5B6660"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- Deplasman -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvTakim2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Alshabab"
+            android:textColor="#16201C"
+            android:textSize="13.5sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+        <androidx.cardview.widget.CardView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#EAE7DD">
 
-            <!-- 1. Takım -->
-            <TextView
-                android:id="@+id/tvTakim1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:text="Takım 1"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <!-- Skor veya VS Alanı -->
-            <TextView
-                android:id="@+id/tvSkor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:background="#F0F0F0"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:text="VS"
-                android:textColor="#333333"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <!-- 2. Takım -->
-            <TextView
-                android:id="@+id/tvTakim2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:text="Takım 2"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
+            <ImageView
+                android:id="@+id/ivDepLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg_harf_avatar" />
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</LinearLayout>

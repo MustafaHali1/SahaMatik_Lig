@@ -1,9 +1,14 @@
 package com.example.sahamatik_lig.model
 
-data class Lig(
-    val id: Int,
-    val name: String,
-    val takimsayisi:Int=0,
-    val takimlar: List<String> = emptyList()
+import java.io.Serializable
 
-)
+data class Lig(
+    val id: Int = 0,
+    val name: String = "",
+    val takimsayisi: Int = 0,
+    val takimlar: List<String> = emptyList(),
+    val formatTipi: String = "KLASIK",
+    val gruplarMap: Map<String, List<String>>? = null,
+    val olusturulmaTarihi: Long = System.currentTimeMillis(),
+    val olusturanId: String = "" // Kaptanın / kurucunun cihaz ID'si
+) : Serializable

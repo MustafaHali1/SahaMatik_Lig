@@ -1,13 +1,17 @@
 package com.example.sahamatik_lig.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sahamatik_lig.databinding.ItemMacBinding
 import com.example.sahamatik_lig.model.Mac
+import com.example.sahamatik_lig.util.ImagePickerHelper
+import com.example.sahamatik_lig.view.TakimDetailActivity
 
 class MacAdapter(
     private val macListesi: List<Mac>,
+    private val ligAdi: String = "",
     private val onMacClick: (Mac) -> Unit
 ) : RecyclerView.Adapter<MacAdapter.MacViewHolder>() {
 
@@ -20,18 +24,52 @@ class MacAdapter(
 
     override fun onBindViewHolder(holder: MacViewHolder, position: Int) {
         val mac = macListesi[position]
+        val context = holder.itemView.context
 
         holder.binding.tvHafta.text = "${mac.hafta}. Hafta"
         holder.binding.tvTakim1.text = mac.takim1
         holder.binding.tvTakim2.text = mac.takim2
 
-        if (mac.isOynandi) {
-            holder.binding.tvSkor.text = "${mac.skor1} - ${mac.skor2}"
+        // Skor gösterimi
+        if (mac.isOynandi && mac.skor1 != null && mac.skor2 != null) {
+            holder.binding.tvMacSkor.text = "${mac.skor1} - ${mac.skor2}"
         } else {
-            holder.binding.tvSkor.text = "VS"
+            holder.binding.tvMacSkor.text = "VS"
         }
 
-        // Tıklamayı direkt root View (CardView) üzerine yazıyoruz
+        // Logo yükleme (varsa)
+        val evLogoUri = ImagePickerHelper.uriGetir(context, "logo_${ligAdi}_${mac.takim1}")
+        if (evLogoUri != null) {
+            holder.binding.ivEvLogo.setImageURI(evLogoUri)
+        }
+        val depLogoUri = ImagePickerHelper.uriGetir(context, "logo_${ligAdi}_${mac.takim2}")
+        if (depLogoUri != null) {
+            holder.binding.ivDepLogo.setImageURI(depLogoUri)
+        }
+
+        // Ev sahibi takım detayına git
+        val evDetayAc = {
+            val intent = Intent(context, TakimDetailActivity::class.java).apply {
+                putExtra("TAKIM_ADI", mac.takim1)
+                putExtra("LIG_ADI", ligAdi)
+            }
+            context.startActivity(intent)
+        }
+        holder.binding.tvTakim1.setOnClickListener { evDetayAc() }
+        holder.binding.ivEvLogo.setOnClickListener { evDetayAc() }
+
+        // Deplasman takım detayına git
+        val depDetayAc = {
+            val intent = Intent(context, TakimDetailActivity::class.java).apply {
+                putExtra("TAKIM_ADI", mac.takim2)
+                putExtra("LIG_ADI", ligAdi)
+            }
+            context.startActivity(intent)
+        }
+        holder.binding.tvTakim2.setOnClickListener { depDetayAc() }
+        holder.binding.ivDepLogo.setOnClickListener { depDetayAc() }
+
+        // Tıklama — MacDetailActivity'yi Fragment üzerinden açacak
         holder.binding.root.setOnClickListener {
             onMacClick(mac)
         }

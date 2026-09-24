@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "694970689549",
+    "project_id": "sahamatik-196ac",
+    "storage_bucket": "sahamatik-196ac.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694970689549:android:a60da08ca1beb6766d0d44",
+        "android_client_info": {
+          "package_name": "com.example.sahamatik_lig"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBriY2B7r_8J53cqdVndx4WBgH_Fo30U1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

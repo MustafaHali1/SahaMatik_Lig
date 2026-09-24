@@ -2,49 +2,60 @@ package com.example.sahamatik_lig.view
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sahamatik_lig.databinding.ActivityLigDetailBinding
 import androidx.fragment.app.Fragment
+import com.example.sahamatik_lig.databinding.ActivityLigDetailBinding
 
 class LigDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLigDetailBinding
     private lateinit var siralamaFragment: SiralamaFragment
     private lateinit var maclarFragment: MaclarFragment
+    private lateinit var istatistiklerFragment: IstatistiklerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityLigDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Intent ile gelen Lig Adı ve Takımları alıyoruz
-        val ligAdi = intent.getStringExtra("LIG_ADI")?:"LIG DETAY"
-        val takimlar = intent.getStringArrayListExtra("TAKIMLAR")?:arrayListOf()
+        val ligAdi = intent.getStringExtra("LIG_ADI") ?: "LIG DETAY"
+        val formatTipi = intent.getStringExtra("FORMAT_TIPI") ?: "KLASIK"
+        val takimlar = intent.getStringArrayListExtra("TAKIMLAR") ?: arrayListOf()
 
-        binding.tvLigTitle.text=ligAdi
+        @Suppress("UNCHECKED_CAST")
+        val gruplarMap = intent.getSerializableExtra("GRUPLAR_MAP") as? HashMap<String, ArrayList<String>>
 
-        // Geri Butonu
+        binding.tvLigTitle.text = ligAdi
+
         binding.tvBack.setOnClickListener { finish() }
 
+        if (formatTipi == "GRUP" && gruplarMap != null) {
+            siralamaFragment = SiralamaFragment.newInstanceGrup(gruplarMap, ligAdi)
+            maclarFragment = MaclarFragment.newInstanceGrup(gruplarMap, ligAdi)
+        } else {
+            siralamaFragment = SiralamaFragment.newInstance(takimlar, ligAdi)
+            maclarFragment = MaclarFragment.newInstance(takimlar, ligAdi)
+        }
 
-        // Fragment instancelarını oluşturuyoruz
-        siralamaFragment = SiralamaFragment.newInstance(takimlar)
-        maclarFragment = MaclarFragment.newInstance(takimlar)
+        istatistiklerFragment = IstatistiklerFragment.newInstance(ligAdi)
 
-        // İlk açılışta Sıralama Fragment'ını basıyoruz
         replaceFragment(siralamaFragment)
-        setButtonSelected(isSiralamaSelected = true)
+        setButtonSelected(0)
 
-        // Buton Tıklamaları - Tamamen Binding
         binding.btnSiralama.setOnClickListener {
             replaceFragment(siralamaFragment)
-            setButtonSelected(isSiralamaSelected = true)
+            setButtonSelected(0)
         }
 
         binding.btnMaclar.setOnClickListener {
             replaceFragment(maclarFragment)
-            setButtonSelected(isSiralamaSelected = false)
+            setButtonSelected(1)
+        }
+
+        binding.btnIstatistik.setOnClickListener {
+            replaceFragment(istatistiklerFragment)
+            setButtonSelected(2)
         }
     }
 
@@ -54,21 +65,20 @@ class LigDetailActivity : AppCompatActivity() {
             .commit()
     }
 
-    // Renk değişimlerini renk koduyla View Binding üzerinden yapıyoruz
-    private fun setButtonSelected(isSiralamaSelected: Boolean) {
-        if (isSiralamaSelected) {
-            binding.btnSiralama.setBackgroundColor(Color.parseColor("#00C853")) // Yeşil
-            binding.btnSiralama.setTextColor(Color.WHITE)
+    private fun setButtonSelected(sekmeIndex: Int) {
+        val aktifBeyaz = Color.parseColor("#F5F3EC")
+        val pasifGri = Color.parseColor("#8C9E95")
 
-            binding.btnMaclar.setBackgroundColor(Color.parseColor("#D9D9D9")) // Gri
-            binding.btnMaclar.setTextColor(Color.BLACK)
-        } else {
-            binding.btnMaclar.setBackgroundColor(Color.parseColor("#00C853")) // Yeşil
-            binding.btnMaclar.setTextColor(Color.WHITE)
+        // Sıralama (0)
+        binding.btnSiralama.setTextColor(if (sekmeIndex == 0) aktifBeyaz else pasifGri)
+        binding.indicatorSiralama.visibility = if (sekmeIndex == 0) View.VISIBLE else View.INVISIBLE
 
-            binding.btnSiralama.setBackgroundColor(Color.parseColor("#D9D9D9")) // Gri
-            binding.btnSiralama.setTextColor(Color.BLACK)
-        }
+        // Maçlar (1)
+        binding.btnMaclar.setTextColor(if (sekmeIndex == 1) aktifBeyaz else pasifGri)
+        binding.indicatorMaclar.visibility = if (sekmeIndex == 1) View.VISIBLE else View.INVISIBLE
 
-        }
+        // İstatistikler (2)
+        binding.btnIstatistik.setTextColor(if (sekmeIndex == 2) aktifBeyaz else pasifGri)
+        binding.indicatorIstatistik.visibility = if (sekmeIndex == 2) View.VISIBLE else View.INVISIBLE
     }
+}

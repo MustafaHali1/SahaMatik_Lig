@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".SahaMatikApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,12 +12,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SahaMatik_Lig">
+
         <activity
             android:name=".view.LigDetailActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sahamatik" android:host="katil" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="sahamatik.app"
+                    android:pathPrefix="/katil" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.SplashActivity"
             android:exported="true">
@@ -26,6 +45,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.TakimDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.MacDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.OyuncuDetailActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Ana saha zemini - koyu yeşil çim -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#1B7A43" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+
+    <!-- Çim şeritleri (açık/koyu alternatif) -->
+    <item android:top="0dp" android:bottom="0dp" android:left="0dp" android:right="0dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#1E8449"
+                android:centerColor="#1B7A43"
+                android:endColor="#1E8449"
+                android:angle="0" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+
+    <!-- Dış çizgi (beyaz) -->
+    <item android:top="10dp" android:bottom="10dp" android:left="10dp" android:right="10dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+
+    <!-- Orta çizgi (yatay) -->
+    <item android:top="215dp" android:bottom="215dp" android:left="10dp" android:right="10dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#CCFFFFFF" />
+            <size android:height="2dp" />
+        </shape>
+    </item>
+
+    <!-- Santra çemberi -->
+    <item android:top="165dp" android:bottom="165dp" android:left="110dp" android:right="110dp">
+        <shape android:shape="oval">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+    <!-- Santra noktası -->
+    <item android:top="213dp" android:bottom="213dp" android:left="158dp" android:right="158dp">
+        <shape android:shape="oval">
+            <solid android:color="#CCFFFFFF" />
+        </shape>
+    </item>
+
+    <!-- ÜST kale alanı (ev sahibi) - ceza alanı -->
+    <item android:top="10dp" android:bottom="330dp" android:left="80dp" android:right="80dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+    <!-- ÜST 6 metre alanı -->
+    <item android:top="10dp" android:bottom="360dp" android:left="120dp" android:right="120dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+    <!-- ALT kale alanı (deplasman) - ceza alanı -->
+    <item android:top="330dp" android:bottom="10dp" android:left="80dp" android:right="80dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+    <!-- ALT 6 metre alanı -->
+    <item android:top="360dp" android:bottom="10dp" android:left="120dp" android:right="120dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="2dp" android:color="#CCFFFFFF" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+</layer-list>

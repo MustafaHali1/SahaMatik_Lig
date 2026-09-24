@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_card"
+    android:elevation="12dp"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Üst Satır: Kapat Butonu & Mevki Rozeti -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Mevki Rozeti -->
+        <TextView
+            android:id="@+id/tvBulutMevki"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_format_secim_kart"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="⚽ Forvet"
+            android:textColor="#0F3D2E"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Kapat Çarpısı -->
+        <TextView
+            android:id="@+id/btnBulutKapat"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="#8C9E95"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <!-- Oyuncu Bilgi Alanı: Avatar + İsimler -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Avatar -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardBackgroundColor="#0F3D2E"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/ivBulutFoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvBulutHarf"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="A"
+                android:textColor="#C7A233"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- İsim & Username & Takım -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvBulutIsim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Oyuncu Adı"
+                android:textColor="#0F3D2E"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBulutUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="@kullaniciadi"
+                android:textColor="#C7A233"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBulutTakim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="Takım Adı"
+                android:textColor="#5B6660"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bu Maçtaki Performans / İstatistikler Kutusu -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_dialog_input"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚽ Gol"
+                android:textColor="#5B6660"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvBulutMacGol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="0"
+                android:textColor="#0F3D2E"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:background="#DCD7CA" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🟨 Sarı"
+                android:textColor="#5B6660"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvBulutMacSari"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="0"
+                android:textColor="#C7A233"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:background="#DCD7CA" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🟥 Kırmızı"
+                android:textColor="#5B6660"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvBulutMacKirmizi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="0"
+                android:textColor="#C0392B"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Kariyer Özeti -->
+    <TextView
+        android:id="@+id/tvBulutKariyerOzet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="⭐ Kariyer: 0 Maç • 0 Gol"
+        android:textColor="#5B6660"
+        android:textSize="12sp" />
+
+    <!-- KAPTAN / YÖNETİCİ HIZLI AKSİYON BUTONLARI (İzleyicide gizlenir) -->
+    <LinearLayout
+        android:id="@+id/layoutBulutYoneticiButonlari"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Gol Butonu -->
+            <TextView
+                android:id="@+id/btnBulutGolEkle"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_btn_primary"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="⚽ Gol Ekle"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!-- Değiştir Butonu -->
+            <TextView
+                android:id="@+id/btnBulutDegistir"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="🔄 Değiştir"
+                android:textColor="#16201C"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <!-- Sarı Kart Butonu -->
+            <TextView
+                android:id="@+id/btnBulutSariKart"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="🟨 Sarı Kart"
+                android:textColor="#C7A233"
+                android:textSize="12.5sp"
+                android:textStyle="bold" />
+
+            <!-- Kırmızı Kart Butonu -->
+            <TextView
+                android:id="@+id/btnBulutKirmiziKart"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_dialog_btn_danger"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="🟥 Kırmızı Kart"
+                android:textColor="#FFFFFF"
+                android:textSize="12.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Tam Profili Gör Butonu -->
+    <TextView
+        android:id="@+id/btnBulutTamProfil"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_format_secim_kart"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="Tam Oyuncu Profilini Gör ➜"
+        android:textColor="#0F3D2E"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

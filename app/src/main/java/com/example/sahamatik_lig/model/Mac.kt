@@ -7,8 +7,7 @@ data class Mac (
     val takim2: String,
     var skor1: Int? = null,
     var skor2: Int? = null,
-
-    ) {
-    var isOynadi: Boolean= false
-    var isOynandi: Boolean=false
+    var isOynandi: Boolean
+) {
+    
 }
