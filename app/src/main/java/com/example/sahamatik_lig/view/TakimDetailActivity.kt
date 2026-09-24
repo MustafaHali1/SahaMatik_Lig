@@ -60,31 +60,37 @@ class TakimDetailActivity : AppCompatActivity() {
         canliKadroTakibiBaslat()
 
         binding.btnOyuncuEkle.setOnClickListener {
-            val haricTutulanlar = mevcutOyuncular.map {
-                it.username.removePrefix("@").lowercase().trim()
-            }.toSet()
-            showOyuncuAraSecDialog(haricTutulanUsernameler = haricTutulanlar) { secilenOyuncu ->
-                KadroRepository.takimaOyuncuEkleKontrollu(
-                    ligAdi = ligAdi,
-                    takimAdi = takimAdi,
-                    oyuncu = secilenOyuncu,
-                    maxKontenjan = 10,
-                    onSuccess = {
-                        if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(this, "${secilenOyuncu.isim} (${secilenOyuncu.username}) kadroya eklendi! ⚽", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    onLimitDolu = {
-                        if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(this, "⚠️ $takimAdi takımı 10 kişilik maksimum kontenjana ulaştı!", Toast.LENGTH_LONG).show()
-                        }
-                    },
-                    onError = { e ->
-                        if (!isFinishing && !isDestroyed) {
-                            Toast.makeText(this, e.message ?: "Oyuncu eklenemedi", Toast.LENGTH_SHORT).show()
-                        }
+            // Bu ligdeki TÜM takımların oyuncularını çek ve hariç tut (Aynı oyuncu iki takıma eklenemez)
+            KadroRepository.ligdekiTumOyuncular(ligAdi) { tumTakimlarOyuncular ->
+                val ligdekiTumUsernameler = (tumTakimlarOyuncular.values.flatten() + mevcutOyuncular).map {
+                    (if (it.username.isNotEmpty()) it.username else it.isim).removePrefix("@").lowercase().trim()
+                }.toSet()
+
+                runOnUiThread {
+                    showOyuncuAraSecDialog(haricTutulanUsernameler = ligdekiTumUsernameler) { secilenOyuncu ->
+                        KadroRepository.takimaOyuncuEkleKontrollu(
+                            ligAdi = ligAdi,
+                            takimAdi = takimAdi,
+                            oyuncu = secilenOyuncu,
+                            maxKontenjan = 10,
+                            onSuccess = {
+                                if (!isFinishing && !isDestroyed) {
+                                    Toast.makeText(this, "${secilenOyuncu.isim} (${secilenOyuncu.username}) kadroya eklendi! ⚽", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            onLimitDolu = {
+                                if (!isFinishing && !isDestroyed) {
+                                    Toast.makeText(this, "⚠️ $takimAdi takımı 10 kişilik maksimum kontenjana ulaştı!", Toast.LENGTH_LONG).show()
+                                }
+                            },
+                            onError = { e ->
+                                if (!isFinishing && !isDestroyed) {
+                                    Toast.makeText(this, e.message ?: "Oyuncu eklenemedi", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        )
                     }
-                )
+                }
             }
         }
 

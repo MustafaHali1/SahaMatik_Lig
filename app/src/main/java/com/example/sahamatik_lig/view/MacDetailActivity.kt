@@ -175,28 +175,42 @@ class MacDetailActivity : AppCompatActivity() {
         // Kaptan / Yönetici Butonları (Maç Kurulduktan Sonra da Kadro Ekleme & Link Paylaşma)
         binding.btnMacOyuncuEkle.setOnClickListener {
             val hedefTakim = if (isEvSecili) evTakim else depTakim
-            // Maçtaki tüm oyuncuları (hem ev hem dep kadroları) toplayıp hariç tut
-            val mevcutUsernameler = (evSahadakiler + evYedekler + depSahadakiler + depYedekler).map {
+            val macMevcutUsernameler = (evSahadakiler + evYedekler + depSahadakiler + depYedekler).map {
                 (if (it.username.isNotEmpty()) it.username else it.isim).removePrefix("@").lowercase().trim()
             }.toSet()
 
-            showOyuncuAraSecDialog(haricTutulanUsernameler = mevcutUsernameler) { secilenOyuncu ->
-                KadroRepository.takimaOyuncuEkleKontrollu(
-                    ligAdi = ligAdi,
-                    takimAdi = hedefTakim,
-                    oyuncu = secilenOyuncu,
-                    maxKontenjan = 10,
-                    onSuccess = {
-                        Toast.makeText(this, "${secilenOyuncu.isim} kadroya eklendi! ⚽", Toast.LENGTH_SHORT).show()
-                        kadrolariYukle()
-                    },
-                    onLimitDolu = {
-                        Toast.makeText(this, "⚠️ Takım kontenjanı dolu (Maksimum 10 oyuncu)!", Toast.LENGTH_LONG).show()
-                    },
-                    onError = { e ->
-                        Toast.makeText(this, e.message ?: "Ekleme başarısız", Toast.LENGTH_SHORT).show()
+            val acVeEkle = { engellenenler: Set<String> ->
+                showOyuncuAraSecDialog(haricTutulanUsernameler = engellenenler) { secilenOyuncu ->
+                    KadroRepository.takimaOyuncuEkleKontrollu(
+                        ligAdi = ligAdi,
+                        takimAdi = hedefTakim,
+                        oyuncu = secilenOyuncu,
+                        maxKontenjan = 10,
+                        onSuccess = {
+                            Toast.makeText(this, "${secilenOyuncu.isim} kadroya eklendi! ⚽", Toast.LENGTH_SHORT).show()
+                            kadrolariYukle()
+                        },
+                        onLimitDolu = {
+                            Toast.makeText(this, "⚠️ Takım kontenjanı dolu (Maksimum 10 oyuncu)!", Toast.LENGTH_LONG).show()
+                        },
+                        onError = { e ->
+                            Toast.makeText(this, e.message ?: "Ekleme başarısız", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            }
+
+            if (formatTipi != "TEKIL_MAC") {
+                KadroRepository.ligdekiTumOyuncular(ligAdi) { tumTakimlarOyuncular ->
+                    val ligdekiTumUsernameler = tumTakimlarOyuncular.values.flatten().map {
+                        (if (it.username.isNotEmpty()) it.username else it.isim).removePrefix("@").lowercase().trim()
+                    }.toSet()
+                    runOnUiThread {
+                        acVeEkle(macMevcutUsernameler + ligdekiTumUsernameler)
                     }
-                )
+                }
+            } else {
+                acVeEkle(macMevcutUsernameler)
             }
         }
 
@@ -233,15 +247,128 @@ class MacDetailActivity : AppCompatActivity() {
 
     // ─── KADROLAR VE 7 KİŞİLİK HALI SAHA AYRIMI ───────────────────────────────
 
+    private var ilkKadroYuklendiMi = false
+
     private fun kadrolariYukle() {
         KadroRepository.takimOyunculariniGetir(ligAdi, evTakim) { evTum ->
-            ayristirKadro(evTum, evSahadakiler, evYedekler)
+            if (!ilkKadroYuklendiMi) {
+                ayristirKadro(evTum, evSahadakiler, evYedekler)
+            } else {
+                kadroyuKoruVeGuncelle(evTum, evSahadakiler, evYedekler)
+            }
 
             KadroRepository.takimOyunculariniGetir(ligAdi, depTakim) { depTum ->
-                ayristirKadro(depTum, depSahadakiler, depYedekler)
+                if (!ilkKadroYuklendiMi) {
+                    ayristirKadro(depTum, depSahadakiler, depYedekler)
+                    ilkKadroYuklendiMi = true
+                } else {
+                    kadroyuKoruVeGuncelle(depTum, depSahadakiler, depYedekler)
+                }
 
                 runOnUiThread {
                     takimSekmesiGuncelle()
+                }
+            }
+        }
+    }
+
+    private fun oyuncuEslesiyorMu(o1: Oyuncu, o2: Oyuncu): Boolean {
+        val u1 = (if (o1.username.isNotEmpty()) o1.username else o1.isim).removePrefix("@").lowercase().trim()
+        val u2 = (if (o2.username.isNotEmpty()) o2.username else o2.isim).removePrefix("@").lowercase().trim()
+        if (u1.isNotEmpty() && u1 == u2) return true
+        if (o1.id.isNotEmpty() && o1.id == o2.id) return true
+        return o1.isim.trim().equals(o2.isim.trim(), ignoreCase = true)
+    }
+
+    private fun kadroyuKoruVeGuncelle(
+        firestoreOyuncular: List<Oyuncu>,
+        sahadakiler: MutableList<Oyuncu>,
+        yedekler: MutableList<Oyuncu>
+    ) {
+        val yerel = KadroRepository.yerelProfilGetir(this)
+
+        // 1. Sahadaki oyuncuların mevkisini/fotoğrafını güncelle, AMA sahadaki yerini ve maç istatistiklerini (gol, kart) koru!
+        for (i in sahadakiler.indices) {
+            val mevcut = sahadakiler[i]
+            val fs = firestoreOyuncular.find { oyuncuEslesiyorMu(it, mevcut) }
+            var foto = fs?.profilFotoUri ?: mevcut.profilFotoUri
+            if (foto.isBlank() && yerel != null && yerel.profilFotoUri.isNotBlank()) {
+                val cleanMevcut = (if (mevcut.username.isNotEmpty()) mevcut.username else mevcut.isim).removePrefix("@").lowercase().trim()
+                val cleanYerel = yerel.username.removePrefix("@").lowercase().trim()
+                if (cleanMevcut == cleanYerel || mevcut.isim.equals(yerel.isim, ignoreCase = true)) {
+                    foto = yerel.profilFotoUri
+                }
+            }
+            sahadakiler[i] = mevcut.copy(
+                profilFotoUri = foto,
+                isim = fs?.isim ?: mevcut.isim,
+                mevki = fs?.mevki ?: mevcut.mevki
+            )
+        }
+
+        // 2. Kulübedeki oyuncuların mevkisini/fotoğrafını güncelle, kulübedeki yerini koru!
+        for (i in yedekler.indices) {
+            val mevcut = yedekler[i]
+            val fs = firestoreOyuncular.find { oyuncuEslesiyorMu(it, mevcut) }
+            var foto = fs?.profilFotoUri ?: mevcut.profilFotoUri
+            if (foto.isBlank() && yerel != null && yerel.profilFotoUri.isNotBlank()) {
+                val cleanMevcut = (if (mevcut.username.isNotEmpty()) mevcut.username else mevcut.isim).removePrefix("@").lowercase().trim()
+                val cleanYerel = yerel.username.removePrefix("@").lowercase().trim()
+                if (cleanMevcut == cleanYerel || mevcut.isim.equals(yerel.isim, ignoreCase = true)) {
+                    foto = yerel.profilFotoUri
+                }
+            }
+            yedekler[i] = mevcut.copy(
+                profilFotoUri = foto,
+                isim = fs?.isim ?: mevcut.isim,
+                mevki = fs?.mevki ?: mevcut.mevki
+            )
+        }
+
+        // 3. Yeni eklenen oyuncu varsa (ne sahada ne kulübede)
+        for (fs in firestoreOyuncular) {
+            val sahadaVar = sahadakiler.any { oyuncuEslesiyorMu(it, fs) }
+            val yedekteVar = yedekler.any { oyuncuEslesiyorMu(it, fs) }
+            if (!sahadaVar && !yedekteVar) {
+                var foto = fs.profilFotoUri
+                if (foto.isBlank() && yerel != null && yerel.profilFotoUri.isNotBlank()) {
+                    val cleanFs = (if (fs.username.isNotEmpty()) fs.username else fs.isim).removePrefix("@").lowercase().trim()
+                    val cleanYerel = yerel.username.removePrefix("@").lowercase().trim()
+                    if (cleanFs == cleanYerel || fs.isim.equals(yerel.isim, ignoreCase = true)) {
+                        foto = yerel.profilFotoUri
+                    }
+                }
+                val yeni = fs.copy(profilFotoUri = foto, gol = 0, sari = 0, kirmizi = 0)
+                if (sahadakiler.size < 7) {
+                    sahadakiler.add(yeni)
+                } else {
+                    yedekler.add(yeni)
+                }
+            }
+        }
+
+        // 4. Firestore'dan tamamen silinen oyuncu varsa temizle
+        sahadakiler.removeAll { s -> !firestoreOyuncular.any { oyuncuEslesiyorMu(it, s) } }
+        yedekler.removeAll { y -> !firestoreOyuncular.any { oyuncuEslesiyorMu(it, y) } }
+
+        // Fotoğrafı eksik olanlar için asenkron profil sorgusu
+        for (oyuncu in (sahadakiler + yedekler)) {
+            if (oyuncu.profilFotoUri.isBlank()) {
+                val rawUsername = if (oyuncu.username.isNotEmpty()) oyuncu.username else oyuncu.isim
+                KadroRepository.oyuncuProfiliGetir(rawUsername) { profil ->
+                    if (profil != null && profil.profilFotoUri.isNotBlank()) {
+                        val sIndex = sahadakiler.indexOfFirst { oyuncuEslesiyorMu(it, oyuncu) }
+                        if (sIndex != -1) {
+                            sahadakiler[sIndex] = sahadakiler[sIndex].copy(profilFotoUri = profil.profilFotoUri)
+                            runOnUiThread { takimSekmesiGuncelle() }
+                        } else {
+                            val yIndex = yedekler.indexOfFirst { oyuncuEslesiyorMu(it, oyuncu) }
+                            if (yIndex != -1) {
+                                yedekler[yIndex] = yedekler[yIndex].copy(profilFotoUri = profil.profilFotoUri)
+                                runOnUiThread { takimSekmesiGuncelle() }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -311,20 +438,12 @@ class MacDetailActivity : AppCompatActivity() {
                 val rawUsername = if (oyuncu.username.isNotEmpty()) oyuncu.username else oyuncu.isim
                 KadroRepository.oyuncuProfiliGetir(rawUsername) { profil ->
                     if (profil != null && profil.profilFotoUri.isNotBlank()) {
-                        val sIndex = sahadakiler.indexOfFirst {
-                            (it.id.isNotEmpty() && it.id == oyuncu.id) ||
-                            (it.username.isNotEmpty() && it.username.equals(oyuncu.username, ignoreCase = true)) ||
-                            (it.isim.isNotEmpty() && it.isim.equals(oyuncu.isim, ignoreCase = true))
-                        }
+                        val sIndex = sahadakiler.indexOfFirst { oyuncuEslesiyorMu(it, oyuncu) }
                         if (sIndex != -1) {
                             sahadakiler[sIndex] = sahadakiler[sIndex].copy(profilFotoUri = profil.profilFotoUri)
                             runOnUiThread { takimSekmesiGuncelle() }
                         } else {
-                            val yIndex = yedekler.indexOfFirst {
-                                (it.id.isNotEmpty() && it.id == oyuncu.id) ||
-                                (it.username.isNotEmpty() && it.username.equals(oyuncu.username, ignoreCase = true)) ||
-                                (it.isim.isNotEmpty() && it.isim.equals(oyuncu.isim, ignoreCase = true))
-                            }
+                            val yIndex = yedekler.indexOfFirst { oyuncuEslesiyorMu(it, oyuncu) }
                             if (yIndex != -1) {
                                 yedekler[yIndex] = yedekler[yIndex].copy(profilFotoUri = profil.profilFotoUri)
                                 runOnUiThread { takimSekmesiGuncelle() }

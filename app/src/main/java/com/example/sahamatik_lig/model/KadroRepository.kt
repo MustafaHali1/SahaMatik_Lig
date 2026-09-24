@@ -993,7 +993,51 @@ object KadroRepository {
             }.addOnFailureListener { onTamamlandi() }
         }
 
-        // ─── KONTENJAN KONTROLLÜ TAKIMA OYUNCU EKLEME ─────────────────────────────
+        // ─── LİGDEKİ TÜM TAKIMLARIN OYUNCULARINI GETİRME ─────────────────────────
+
+        fun ligdekiTumOyuncular(
+            ligAdi: String,
+            onSonuc: (Map<String, List<Oyuncu>>) -> Unit
+        ) {
+            val safeLig = safeDoc(ligAdi)
+            db.collection("ligler")
+                .document(safeLig)
+                .collection("takimlar")
+                .get()
+                .addOnSuccessListener { takimSnap ->
+                    if (takimSnap.isEmpty) {
+                        onSonuc(emptyMap())
+                        return@addOnSuccessListener
+                    }
+                    val sonucMap = java.util.concurrent.ConcurrentHashMap<String, List<Oyuncu>>()
+                    val takimDocList = takimSnap.documents
+                    var kalanTakim = takimDocList.size
+
+                    for (tDoc in takimDocList) {
+                        val takimIsmi = tDoc.id
+                        tDoc.reference.collection("oyuncular").get()
+                            .addOnSuccessListener { oSnap ->
+                                val liste = oSnap.toObjects(Oyuncu::class.java)
+                                sonucMap[takimIsmi] = liste
+                                kalanTakim--
+                                if (kalanTakim <= 0) {
+                                    onSonuc(sonucMap)
+                                }
+                            }
+                            .addOnFailureListener {
+                                kalanTakim--
+                                if (kalanTakim <= 0) {
+                                    onSonuc(sonucMap)
+                                }
+                            }
+                    }
+                }
+                .addOnFailureListener {
+                    onSonuc(emptyMap())
+                }
+        }
+
+        // ─── KONTENJAN VE LİG ÇAKIŞMA KONTROLLÜ TAKIMA OYUNCU EKLEME ──────────────
 
         fun takimaOyuncuEkleKontrollu(
             ligAdi: String,
@@ -1007,6 +1051,79 @@ object KadroRepository {
             val safeLig = safeDoc(ligAdi)
             val safeTakim = safeDoc(takimAdi)
 
+            val cleanTargetUsername = (if (oyuncu.username.isNotEmpty()) oyuncu.username else oyuncu.isim)
+                .removePrefix("@").lowercase().trim()
+
+            // 1. Önce bu ligdeki TÜM takımları kontrol et: Oyuncu başka bir takımda veya bu takımda var mı?
+            db.collection("ligler")
+                .document(safeLig)
+                .collection("takimlar")
+                .get()
+                .addOnSuccessListener { takimSnap ->
+                    val takimDocList = takimSnap.documents
+                    if (takimDocList.isEmpty()) {
+                        hedefTakimaEkle(safeLig, safeTakim, ligAdi, takimAdi, oyuncu, maxKontenjan, onSuccess, onLimitDolu, onError)
+                        return@addOnSuccessListener
+                    }
+
+                    var oyuncuBulunanTakim: String? = null
+                    var kalanKontrol = takimDocList.size
+
+                    for (tDoc in takimDocList) {
+                        val currTakim = tDoc.id
+                        tDoc.reference.collection("oyuncular").get()
+                            .addOnSuccessListener { oSnap ->
+                                val varMi = oSnap.documents.any { doc ->
+                                    val u = (doc.getString("username") ?: doc.getString("isim") ?: "")
+                                        .removePrefix("@").lowercase().trim()
+                                    u.isNotEmpty() && u == cleanTargetUsername
+                                }
+                                if (varMi) {
+                                    oyuncuBulunanTakim = currTakim
+                                }
+                                kalanKontrol--
+                                if (kalanKontrol <= 0) {
+                                    if (oyuncuBulunanTakim != null) {
+                                        if (oyuncuBulunanTakim.equals(safeTakim, ignoreCase = true)) {
+                                            onError(Exception("⚠️ '${oyuncu.isim}' zaten $takimAdi kadrosunda mevcut!"))
+                                        } else {
+                                            onError(Exception("⚠️ '${oyuncu.isim}' zaten bu ligdeki '$oyuncuBulunanTakim' takımında yer alıyor! Aynı ligde iki farklı takımda oynayamaz."))
+                                        }
+                                        return@addOnSuccessListener
+                                    }
+
+                                    // Hiçbir takımda yoksa hedef takıma ekle
+                                    hedefTakimaEkle(safeLig, safeTakim, ligAdi, takimAdi, oyuncu, maxKontenjan, onSuccess, onLimitDolu, onError)
+                                }
+                            }
+                            .addOnFailureListener {
+                                kalanKontrol--
+                                if (kalanKontrol <= 0) {
+                                    if (oyuncuBulunanTakim != null) {
+                                        onError(Exception("⚠️ '${oyuncu.isim}' zaten bu ligdeki '$oyuncuBulunanTakim' takımında yer alıyor! Aynı ligde iki farklı takımda oynayamaz."))
+                                        return@addOnFailureListener
+                                    }
+                                    hedefTakimaEkle(safeLig, safeTakim, ligAdi, takimAdi, oyuncu, maxKontenjan, onSuccess, onLimitDolu, onError)
+                                }
+                            }
+                    }
+                }
+                .addOnFailureListener {
+                    hedefTakimaEkle(safeLig, safeTakim, ligAdi, takimAdi, oyuncu, maxKontenjan, onSuccess, onLimitDolu, onError)
+                }
+        }
+
+        private fun hedefTakimaEkle(
+            safeLig: String,
+            safeTakim: String,
+            ligAdi: String,
+            takimAdi: String,
+            oyuncu: Oyuncu,
+            maxKontenjan: Int,
+            onSuccess: () -> Unit,
+            onLimitDolu: () -> Unit,
+            onError: (Exception) -> Unit
+        ) {
             val oyuncularRef = db.collection("ligler")
                 .document(safeLig)
                 .collection("takimlar")
@@ -1019,12 +1136,16 @@ object KadroRepository {
                     return@addOnSuccessListener
                 }
 
+                val cleanTargetUsername = (if (oyuncu.username.isNotEmpty()) oyuncu.username else oyuncu.isim)
+                    .removePrefix("@").lowercase().trim()
+
                 val zatenVar = snapshot.documents.any {
-                    val u = it.getString("username") ?: ""
-                    u.equals(oyuncu.username, ignoreCase = true)
+                    val u = (it.getString("username") ?: it.getString("isim") ?: "")
+                        .removePrefix("@").lowercase().trim()
+                    u.isNotEmpty() && u == cleanTargetUsername
                 }
                 if (zatenVar) {
-                    onError(Exception("Bu oyuncu zaten takım kadrosunda mevcut!"))
+                    onError(Exception("⚠️ '${oyuncu.isim}' zaten $takimAdi kadrosunda mevcut!"))
                     return@addOnSuccessListener
                 }
 
@@ -1039,7 +1160,6 @@ object KadroRepository {
                 )
                 yeniDoc.set(eklenecek)
                     .addOnSuccessListener {
-                        // Oyuncunun kalıcı kariyer profiline de ekle (Lig veya Tekil Maç)
                         db.collection("ligler").document(safeLig).get()
                             .addOnSuccessListener { lDoc ->
                                 val format = lDoc.getString("formatTipi") ?: "KLASIK"
